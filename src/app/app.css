@@ -1,0 +1,16 @@
+/* ============================================
+   APP ROOT STYLES
+   ============================================ */
+
+:host {
+  display: block;
+}
+
+/* Utility classes */
+.bg-lightblue {
+  background-color: #add8e6;
+}
+
+.bg-white {
+  background-color: #fff;
+}

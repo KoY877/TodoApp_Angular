@@ -1,0 +1,23 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 flex align-items" >
+            <div class="sign-in-container">
+                <h2>Sign In</h2>
+                <form [formGroup]="form" (ngSubmit)="handleSignInSubmit($event)">
+                  <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" class="form-control" formControlName="email" name="email" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" class="form-control" formControlName="password" name="password" required>
+                  </div>
+                  <div class="flex justify-content-end gap-2">
+                    <button type="submit" class="btn btn-primary">Sign In</button>
+                    <button type="button" class="btn btn-secondary" (click)="handleSignUpRedirect()">Sign Up</button>
+                  </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

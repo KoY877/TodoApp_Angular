@@ -1,0 +1,240 @@
+/* ============================================
+   HEADER STYLES
+   ============================================ */
+
+.header {
+    height: 45px;
+    background-color: #444;
+    padding-top: 2px;
+}
+
+.row {
+    width: 100%;
+}
+
+.col-lg {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.navbar-brand {
+    color: #2185d0;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.navbar-brand:hover {
+    color: #2185d0;
+}
+
+/* ============================================
+   LAYOUT & FLEX
+   ============================================ */
+
+.flex {
+    display: flex;
+    align-items: center;
+}
+
+.dropdown {
+    flex-shrink: 0;
+}
+
+/* Logo au centre */
+.logo-container {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.logo-image {
+    height: 35px;
+    width: auto;
+    object-fit: contain;
+}
+
+/* Menu utilisateur à droite */
+.user-menu {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+
+.user-menu ul {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+
+.btn-header {
+    padding: 0 2px;
+    margin: 0 3px;
+    height: 25px;
+    background-color: rgba(255, 255, 255, 0.15);
+    border: none;
+    color: white;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-header:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+.btn-header:active,
+button:active {
+    background-color: rgba(153, 153, 153, 0.15);
+}
+
+.button-create:active {
+    background-color: #2185d0;
+    transform: scale(0.95);
+}
+
+.sign-in,
+.sign-up {
+    padding: 6px 16px;
+    margin: 0 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+}
+
+.sign-in {
+    background-color: transparent;
+    color: white;
+    border: 1px solid white;
+}
+
+.sign-in:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sign-up {
+    background-color: #2185d0;
+    color: white;
+}
+
+.sign-up:hover {
+    background-color: #1a6db8;
+}
+
+/* ============================================
+   ICONS & IMAGES
+   ============================================ */
+
+.bars {
+    margin-left: 5px;
+    margin-right: 15px;
+}
+
+.fa-question {
+    color: black;
+}
+
+.icons-back .user {
+    font-size: 11px;
+    color: darkred;
+    position: relative;
+    top: -2px;
+    left: 0;
+}
+
+/* Browser-specific adjustments */
+@-moz-document url-prefix() {
+    .dropdown-board > .user {
+        top: -2px !important;
+        left: 0 !important;
+    }
+}
+
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+    .icons-back .user {
+        top: -2px;
+        left: 0;
+    }
+}
+
+/* ============================================
+   SEARCH
+   ============================================ */
+
+.form-inline {
+    margin-left: 7px;
+}
+
+.search {
+    margin: 0.5rem 0.5rem 0.5rem 0.23rem;
+    border: 2px solid #cbcccc;
+    border-radius: 4px;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.search:active,
+.search:focus {
+    border-color: #2185d0;
+}
+
+/* ============================================
+   DROPDOWN
+   ============================================ */
+
+.dropdown-menu {
+    z-index: 1050;
+}
+
+.dropdown-item {
+    padding: 0.5rem 1rem 0.5rem 0.57rem;
+    transition: background-color 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* ============================================
+   LIST ITEMS
+   ============================================ */
+
+li {
+    border-bottom: 2px solid #cbcccc;
+}
+
+li:last-child {
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.activ {
+    border-left: 3.5px solid #2185d0;
+}
+
+.shadow {
+    box-shadow: 5px 0 0 0 rgba(0, 0, 0, 0.5);
+}
