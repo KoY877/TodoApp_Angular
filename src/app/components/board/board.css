@@ -1,0 +1,127 @@
+
+/* ============================================
+   BOARD STYLES
+   ============================================ */
+
+.board-name {
+    font-size: 18px;
+    margin: 0 10px 0 3px;
+}
+
+.dropdown-board {
+    display: inline-block;
+    width: 27px;
+    height: 27px;
+    background-color: var(--color-white, #fff);
+    border: 1px solid var(--color-white, #fff);
+    border-radius: var(--border-radius-full, 50%);
+    box-shadow: var(--shadow-sm, 0 0 5px rgba(0, 0, 0, 0.2));
+    transition: box-shadow var(--transition-fast, 0.2s ease);
+    cursor: pointer;
+}
+
+.dropdown-board:hover {
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.dropdown-board > .user {
+    font-size: 9px;
+    position: relative;
+    top: -3px; /* Firefox */
+    left: 0px;
+}
+
+@-moz-document url-prefix() {
+    .dropdown-board > .user {
+      top: -3px !important;
+      left: -1px !important;
+    }
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    .dropdown-board > .user {
+        top: -1px;  /* Chrome */
+        left: -3px;
+    }
+}
+
+.dropdown-board > .fa-plus {
+    color: #555;
+}
+
+
+
+.btn-right {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: background-color var(--transition-medium, 0.3s ease);
+}
+
+.btn-right i {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.btn-right:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: var(--border-radius-full, 50%);
+}
+
+.menu {
+    font-size: 1.1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px 6px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: background-color var(--transition-medium, 0.3s ease);
+    margin-right: -28px;
+}
+
+.menu:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: var(--border-radius-md, 5px);
+}
+
+.bars {
+    margin-right: 0.5rem;
+    margin-left: 0.5rem;
+}
+
+
+.dropdown {
+    flex-shrink: 0;
+}
+
+.row {
+    width: 100%;
+}
+
+.align-item {
+    align-items: center;
+    flex-grow: 1;
+    justify-content: space-between;
+}
+
+.showCollector {
+    width: 22rem;
+    padding: 0.7rem;
+    box-shadow: 0px 4px 10px 4px rgba(0, 0, 0, 0.2);
+}
+
+.showinviteMember {
+    padding: 0px;
+    width: 22rem;
+}
+
+.numberOfMember {
+    font-size: 13px;
+}
+

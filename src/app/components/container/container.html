@@ -1,1 +1,35 @@
-<p>container works!</p>
+<div class="container-fluid containerHeight" >
+
+  <app-sign-in
+    *ngIf="sign_in && !sign_up && !isConnected"
+    (closeSignIn_OpenSignUp)="handleOpenSignUp()"
+  ></app-sign-in>
+
+
+  <app-sign-up
+    *ngIf="sign_up && !sign_in && !isConnected"
+    (closeSignUp_OpenSignIn)="handleOpenSignIn()"
+  ></app-sign-up>
+
+  <app-modal-create-board
+    *ngIf="openModalCreateBoard && isConnected &&
+     !sign_in && !sign_up && !isCloseAllDropdown && !clickedBoard"
+      (closeModal)="handleCloseModal()"
+
+  ></app-modal-create-board>
+<!--
+ Dans le if a mettre aprés:
+ && !clickedBoard
+
+[modelData] = "modalData" -->
+
+
+  <app-board
+    *ngIf="openBoard && isConnected && !openModalCreateBoard && !sign_in && !sign_up"
+
+  ></app-board>
+
+   <!-- [clickedBoard]="clickedBoard"
+    [isCloseAllDropdown]="isCloseAllDropdown"
+    (allDropdownClosed)="handelClosedDropdown()" -->
+</div>

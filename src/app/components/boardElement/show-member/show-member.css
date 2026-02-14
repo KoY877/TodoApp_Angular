@@ -1,0 +1,36 @@
+.previous {
+    width: 100%;
+    border: 1px solid #d6d6d6;
+    background-color: #f2f2f2;
+    margin: 0px 0px 10px 0px;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+}
+
+.btn-close {
+    background-color: transparent;
+    font-size: 15px;
+    transition: background-color 0.3s ease;
+    outline: none;
+    box-shadow: none;
+    width: 22px;
+    height: 22px;
+}
+
+.btn-close:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    transition: none;
+}
+
+.email-content {
+    overflow: auto;
+    text-overflow: clip;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+
+

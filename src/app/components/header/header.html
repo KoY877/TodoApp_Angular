@@ -7,7 +7,7 @@
           <div class="dropdown " >
               <button class="btn-header board" type="button" data-bs-toggle="dropdown" aria-expanded="false" *ngIf="isConnected">
                   <div class="bars" (click)="handlecloseAllOpenDropdown()">
-                      <i class="fa fa-bars "></i>
+                      <fa-icon [icon]="faBars"></fa-icon>
                       <span> Boards </span>
                   </div>
               </button>
@@ -55,48 +55,47 @@
             </span>
           </div>
 
-          <div class=" user-menu flex align-items-center justify-content-end " >
-            <ul class=" " style="--bs-scroll-height: 100px; " *ngIf="!isConnected">
-              <button class="sign-in " type="button" (click)="handleSignIn()" >Sign In</button>
-              <button class="sign-up" type="button"   (click)="handleSignUp()" >Sign Up</button>
-            </ul>
 
-            <ul class=" " style="--bs-scroll-height: 100px; " *ngIf="isConnected">
-                <div class="dropdown">
-                    <button class="btn-header" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fa fa-bell p-1"></i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                      <li><a class="dropdown-item" href="#">Action</a></li>
-                      <li><a class="dropdown-item" href="#">Another action</a></li>
-                      <li><a class="dropdown-item" href="#">Something else here</a></li>
-                    </ul>
-                </div>
-                <div class="dropdown">
-                    <button class="btn-header" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <div class="icons-back">
-                            <i class="fa fa-question"></i>
-                        </div>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                      <li><a class="dropdown-item" href="#">Action</a></li>
-                      <li><a class="dropdown-item" href="#">Another action</a></li>
-                      <li><a class="dropdown-item" href="#">Something else here</a></li>
-                    </ul>
-                </div>
-                <div class="dropdown">
-                    <button class="btn-header" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <div class="icons-back">
-                            <span class=" fa user">CO</span>
-                        </div>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                      <li><a class="dropdown-item" href="#">Action</a></li>
-                      <li><a class="dropdown-item" href="#">Another action</a></li>
-                      <li><a class="dropdown-item" href="#" (click)="handleDisconnect(); $event.preventDefault()">Disconnect</a></li>
-                    </ul>
-                </div>
-            </ul>
+          <div class="menu-wrapper align-items-center justify-content-end " *ngIf="!isConnected">
+            <button class="sign-in" type="button" (click)="handleSignIn()">Sign In</button>
+            <button class="sign-up" type="button" (click)="handleSignUp()">Sign Up</button>
+          </div>
+
+          <div class="menu-wrapper align-items-center justify-content-end " style="--bs-scroll-height: 100px; " *ngIf="isConnected">
+              <div class="dropdown">
+                  <button class="btn-header" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      <fa-icon [icon]="faBell" class="p-1"></fa-icon>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="#">Action</a></li>
+                    <li><a class="dropdown-item" href="#">Another action</a></li>
+                    <li><a class="dropdown-item" href="#">Something else here</a></li>
+                  </ul>
+              </div>
+              <div class="dropdown">
+                  <button class="btn-header" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      <div class="icons-back ">
+                          <fa-icon class="QuestionTag" [icon]="faQuestion"></fa-icon>
+                      </div>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="#">Action</a></li>
+                    <li><a class="dropdown-item" href="#">Another action</a></li>
+                    <li><a class="dropdown-item" href="#">Something else here</a></li>
+                  </ul>
+              </div>
+              <div class="dropdown">
+                  <button class="btn-header" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      <div class="icons-back">
+                          <span class=" fa user">CO</span>
+                      </div>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="#">Action</a></li>
+                    <li><a class="dropdown-item" href="#">Another action</a></li>
+                    <li><a class="dropdown-item" href="#" (click)="handleDisconnect(); $event.preventDefault()">Disconnect</a></li>
+                  </ul>
+              </div>
           </div>
         </div>
       </div>

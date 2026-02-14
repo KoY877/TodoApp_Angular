@@ -1,0 +1,182 @@
+<nav class="navbar board">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-12 col-md-12 flex align-item" >
+        <ul >
+          <li *ngIf="clickedBoard" >
+            <span #loadedata (load)="getCurrentBoardData(clickedBoard)"></span>
+            <strong class="board-name">{{clickedBoard.name}}</strong>
+          </li>
+
+          <li>
+            <div class="dropdown">
+              <button
+                class="dropdown-board"
+                type="button"
+                (click)="handleOpenDropdown(memberDropdown[0].name)"
+                [style.color]="'darkred'"
+              >
+                <span class="fa user">CO</span>
+              </button>
+              <div class="menu-dropdown menu-dropdown-start showCollector" *ngIf="memberDropdown[0].isDropdown">
+                <app-show-admin
+                (closeMemberModal)="handleCloseDropdown(memberDropdown[0].name)"
+                (clickOutside)="handleCloseDropdown($event)"
+                ></app-show-admin>
+              </div>
+            </div>
+          </li>
+          <li *ngFor="let item of members; let i = index ;">
+            <div class="dropdown" >
+              <button
+                class="dropdown-board"
+                type="button"
+                (click)="handleOpenDropdown(item?.memberEmail)"
+                [style.color]="memberColors![i]"
+              >
+                <span class="fa user">{{item?.memberEmail | character}}</span>
+              </button>
+              <div class="menu-dropdown menu-dropdown-start showCollector" *ngIf="memberDropdown[i+7].isDropdown">
+                <app-show-member
+                  [getBoardId]="boardId"
+                  [memberData]="memberEdit"
+                  (closeMemberModal)="handleCloseDropdown(item?.memberEmail)"
+                  (clickOutside)="handleCloseDropdown($event)"
+                ></app-show-member>
+              </div>
+            </div>
+          </li>
+
+          <li  *ngIf="members && members.length > 0">
+            <div class="dropdown" >
+              <button
+                class="dropdown-board"
+                type="button"
+                (click)="handleOpenDropdown(memberDropdown[1].name)"
+              >
+                <span class="numberOfMember">{{numberOfMember}}</span>
+              </button>
+              <div class="menu-dropdown menu-dropdown-start showinviteMember" *ngIf="memberDropdown[1].isDropdown" >
+                <app-search-member
+                  [getBoardId]="boardId"
+                  [memberData]="memberEmails"
+                  (closeSearchMemberDP)="handleCloseDropdown(memberDropdown[1].name)"
+                  (clickOutside)="handleCloseDropdown($event)"
+                  (openSearchMemberDP)="handleOpenDropdown($event)"
+                ></app-search-member>
+              </div>
+            </div>
+          </li>
+
+          <li>
+            <div class="dropdown" >
+              <button
+                class="dropdown-board"
+                type="button"
+                (click)="handleOpenDropdown(memberDropdown[2].name)"
+              >
+                <span class="fa fa-plus"></span>
+              </button>
+              <div class="menu-dropdown menu-dropdown-start showinviteMember" *ngIf="memberDropdown[2].isDropdown" >
+                <app-invite-member
+                (closeInviteModal)="handleCloseDropdown(memberDropdown[2].name)"
+                (clickOutside)="alertOnClickOutside($event)"
+                (clickOutside2)="handleCloseDropdown($event)"
+                [getBoardId]="boardId"
+                ></app-invite-member>
+              </div>
+            </div>
+          </li>
+        </ul>
+
+        <ul class="gap-2">
+          <li>
+            <div class="btn-group">
+              <button
+                class="btn-right"
+                type="button"
+                (click)="handleOpenDropdown(memberDropdown[3].name)"
+              >
+              <i class="fa-regular fa-clock"></i>
+              </button>
+              <ul class="menu-dropdown menu-dropdown-end" *ngIf="memberDropdown[3].isDropdown">
+                <li><a class="dropdown-item" href="#">Action</a></li>
+                <li><a class="dropdown-item" href="#">Another action</a></li>
+                <li>
+                  <a class="dropdown-item" href="#">Something else here</a>
+                </li>
+              </ul>
+            </div>
+          </li>
+          <li>
+            <div class="btn-group">
+              <button
+                class="btn-right"
+                type="button"
+                (click)="handleOpenDropdown(memberDropdown[4].name)"
+              >
+                <i class="fa fa-filter"></i>
+              </button>
+              <ul class="menu-dropdown menu-dropdown-end" *ngIf="memberDropdown[4].isDropdown">
+                <li><a class="dropdown-item" href="#">Action</a></li>
+                <li><a class="dropdown-item" href="#">Another action</a></li>
+                <li>
+                  <a class="dropdown-item" href="#">Something else here</a>
+                </li>
+              </ul>
+            </div>
+          </li>
+          <li class="">
+            <div class="btn-group">
+              <button
+                class="btn-right"
+                type="button"
+                (click)="handleOpenDropdown(memberDropdown[4].name)"
+              >
+              <i class="fa-solid fa-pencil"></i>
+              </button>
+              <ul class="menu-dropdown menu-dropdown-end" *ngIf="memberDropdown[4].isDropdown">
+                <li><a class="dropdown-item" href="#">Action</a></li>
+                <li><a class="dropdown-item" href="#">Another action</a></li>
+                <li>
+                  <a class="dropdown-item" href="#">Something else here</a>
+                </li>
+              </ul>
+            </div>
+          </li>
+          <li>
+            <div class="btn-group">
+              <button
+                class="menu"
+                type="button"
+                (click)="position = 'end'"
+                (click)="handleOpenDropdown(memberDropdown[5].name)"
+              >
+                <i class="fa fa-bars bars"></i>Menu
+              </button>
+              <ul class="menu-dropdown menu-dropdown-end" *ngIf="memberDropdown[5].isDropdown">
+                <li><a class="dropdown-item" href="#">Action</a></li>
+                <li><a class="dropdown-item" href="#">Another action</a></li>
+                <li>
+                  <a class="dropdown-item" href="#">Something else here</a>
+                </li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+<!-- <app-list
+  [clikedBoard]="currentBoard"
+></app-list> -->
+
+<app-alert
+  *ngIf="isAlert"
+  (cancel)="handleCancel()"
+  (discard)="handleCloseDropdown(memberDropdown[2].name)"
+></app-alert>
+

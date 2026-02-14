@@ -1,0 +1,78 @@
+<div *ngIf="currentStep === 1">
+    <div class="dropdown-header d-flex" >
+        <div class="title"><strong>Board members</strong></div>
+        <button type="button" class="btn-close d-flex justify-content-end" (click)="handleCloseDropdown()"></button>
+    </div>
+    <div class="body-dropdown" >
+        <ul >
+            <li >
+                <form action="">
+                    <input
+                        type="text"
+                        class="search "
+                        [formControl]="searchControl"
+                        placeholder="Search"
+                    >
+                </form>
+            </li>
+
+            <li>
+                <a class="dropdown-item d-flex"   *ngIf="!isResult ">
+                    <div class="icons-member">
+                        <span class="fa user">CO</span>
+                    </div>
+                    <div class="member-content">
+                        <strong>Collector</strong>
+                        <div class="role">Owner</div>
+                    </div>
+                </a>
+            </li>
+
+            <li *ngFor="let item of memberData; let i = index" >
+                <a class="dropdown-item d-flex" [ngClass]="{'activ': activeIndex === item?.memberEmail}"  (click)="handleOpenDropdown(item?.memberEmail)" *ngIf="!isResult ">
+                    <div class="icons-member">
+                        <span class="fa user">{{item?.memberEmail | character}}</span>
+                    </div>
+                    <div class="member-content">
+                        <strong>{{ item?.memberEmail }}</strong>
+                        <div class="role">{{ item?.role }}</div>
+                    </div>
+                </a>
+            </li>
+            <li *ngFor="let result of results" >
+                <a class="dropdown-item d-flex" [ngClass]="{'activ': activeIndex === result?.memberEmail}" (click)="handleOpenDropdown( result?.memberEmail)" *ngIf="isResult" >
+                    <div class="icons-member">
+                        <span class="fa user">{{result?.memberEmail | character}}</span>
+                    </div>
+                    <div class="member-content">
+                        <strong>{{ result?.memberEmail }}</strong>
+                        <div class="role">{{ result?.role }}</div>
+                    </div>
+                </a>
+            </li>
+            <li  >
+                <a class="dropdown-item d-flex" *ngIf="isResult && results?.length === 0" >
+                    No member found
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div *ngIf="currentStep === 2">
+    <div class="dropdown-header d-flex" >
+        <button type="button" class="dropdown-btn-previous" (click)="prevStep()" ><i class="fa fa-arrow-left"></i></button>
+        <div class="title"><strong>Member</strong></div>
+        <button type="button" class="btn-close d-flex justify-content-end" (click)="handleCloseDropdown()"></button>
+    </div>
+    <div class="body-dropdown-2" >
+        <app-show-member
+            [getBoardId]="getBoardId"
+            [memberData]="memberEdit"
+            [currentStep]="currentStep"
+            (sendChangeRoleToSearch)="handleChangeRolestatus($event)"
+            (closeMemberModal)="handleCloseDropdownMember()"
+        ></app-show-member>
+    </div>
+</div>
+

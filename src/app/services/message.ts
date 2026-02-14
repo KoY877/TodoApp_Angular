@@ -76,8 +76,8 @@ export class Message {
     this.connected.next(message);
   }
 
-  messageDisconnect(message: boolean) {
-    this.disconnect.next(message);
+  messageDisconnect() {
+    this.disconnect.next(true);
   }
 
   messageOpenBoard(message: boolean) {
