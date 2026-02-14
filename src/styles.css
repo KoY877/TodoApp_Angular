@@ -1,1 +1,290 @@
 /* You can add global styles to this file, and also import other style files */
+/* ============================================
+   GLOBAL STYLES
+   ============================================ */
+
+:root {
+    --header-secondary: #6c757d;
+    --header-primary: #0d6efd;
+    --color-primary: #2185d0;
+    --color-white: #fff;
+    --color-gray-dark: #444;
+    --color-gray-light: #fafafa;
+    --color-gray-border: rgba(0, 0, 0, 0.35);
+    --color-danger: darkred;
+    --border-radius-sm: 3px;
+    --border-radius-md: 5px;
+    --border-radius-full: 50%;
+    --transition-fast: 0.2s ease;
+    --transition-medium: 0.3s ease;
+    --shadow-sm: 0 4px 4px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.container {
+    background-color: aqua;
+}
+
+/* ============================================
+   FLEX UTILITIES
+   ============================================ */
+
+.flex {
+    display: flex;
+}
+
+.flex > ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    gap: 0.3rem;
+}
+
+.flex-end {
+    justify-content: flex-end;
+}
+
+.aic {
+    align-items: center;
+}
+
+.jcc {
+    justify-content: center;
+}
+
+.jcsb {
+    justify-content: space-between;
+}
+
+.jce {
+    justify-content: end;
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+
+.button {
+    position: relative;
+    padding: 5px 10px;
+    margin: 0;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--color-white);
+    border: none;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    overflow: hidden;
+    transition: background-color var(--transition-medium), transform var(--transition-fast);
+}
+
+.button:hover {
+    transform: translateY(-1px);
+}
+
+.button:active {
+    transform: scale(0.98);
+}
+
+.buttonInvite {
+    width: 30%;
+    height: 2rem;
+    border-radius: var(--border-radius-md);
+    background-color: #fbfbfb;
+    color: var(--color-gray-dark);
+    border: 1px solid var(--color-gray-border);
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.buttonInvite:hover {
+    background-color: #f0f0f0;
+}
+
+.buttonRemove {
+    position: relative;
+    width: 20%;
+    font-size: 14px;
+    font-weight: bold;
+    height: 2rem;
+    color: white;
+    border: 1px solid white;
+    border-radius: var(--border-radius-md);
+    background-color: transparent;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.buttonRemove:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+}
+
+.button-create {
+    position: relative;
+    padding: 5px 10px;
+    margin: 10px 10px 0 10px;
+    width: 92%;
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--color-white);
+    background-color: var(--color-primary);
+    border: none;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    overflow: hidden;
+    transition: background-color var(--transition-medium), transform var(--transition-fast);
+}
+
+.button-create:hover {
+    background-color: #1a6db8;
+}
+
+.button-create:active {
+    transform: scale(0.98);
+}
+
+/* ============================================
+   NAVIGATION BUTTONS
+   ============================================ */
+
+.previous {
+    color: var(--color-gray-dark);
+    width: 90px;
+    transition: background-color var(--transition-fast);
+}
+
+.previous:hover {
+    background-color: #e6e5e5;
+}
+
+.next {
+    background-color: var(--color-primary);
+    transition: background-color var(--transition-fast);
+}
+
+.next:hover {
+    background-color: #1a6db8;
+}
+
+/* ============================================
+   ICONS & AVATARS
+   ============================================ */
+
+.icons-back {
+    width: 25px;
+    height: 24px;
+    background-color: var(--color-gray-light);
+    margin-left: 3px;
+    margin-right: 3px;
+    border-radius: var(--border-radius-full);
+    transition: box-shadow var(--transition-fast);
+}
+
+.icons-back:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.icons-back-board {
+    font-size: 12px;
+    width: 2.5rem;
+    height: 2.3rem;
+    border: 0.5px solid var(--color-gray-border);
+    border-radius: var(--border-radius-full);
+    text-align: center;
+    margin-right: 1rem;
+    color: var(--color-danger);
+    position: relative;
+    top: 9px;
+    left: 4px;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.icons-back-board:hover {
+    border-color: var(--color-danger);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.user {
+    position: relative;
+    top: 10px;
+    left: 1px;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.textWidth {
+    width: 15rem;
+}
+
+.role {
+    margin: 5px 10px 15px 0;
+    cursor: pointer;
+    transition: text-decoration var(--transition-fast);
+}
+
+.role:hover {
+    text-decoration: underline;
+}
+
+.fa-pencil {
+    margin: 0 0 0 5px;
+    font-size: 13px;
+    transition: color var(--transition-fast);
+}
+
+.fa-pencil:hover {
+    color: var(--color-primary);
+}
+
+/* ============================================
+   DROPDOWN MENUS
+   ============================================ */
+
+.menu-dropdown {
+    position: absolute;
+    top: 100%;
+    background-color: var(--color-white);
+    box-shadow: var(--shadow-md);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    min-width: 250px;
+    border-radius: var(--border-radius-sm);
+    z-index: 1200;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: opacity var(--transition-fast),
+                transform var(--transition-fast),
+                visibility var(--transition-fast);
+}
+
+.menu-dropdown.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.menu-dropdown-start {
+    left: 0;
+}
+
+.menu-dropdown-end {
+    right: 0;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media screen and (max-width: 480px) {
+    .jcsb {
+        justify-content: normal !important;
+    }
+}
