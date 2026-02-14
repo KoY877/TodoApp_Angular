@@ -5,7 +5,9 @@
 .header {
     height: 45px;
     background-color: #444;
-    padding-top: 2px;
+    padding: 0;
+    position: relative;
+    z-index: 1060;
 }
 
 .row {
@@ -18,6 +20,7 @@
     align-items: center;
     width: 100%;
 }
+
 
 .navbar-brand {
     color: #2185d0;
@@ -71,11 +74,10 @@
     align-items: center;
 }
 
-.user-menu ul {
+.menu-wrapper {
     display: flex;
     align-items: center;
     gap: 5px;
-    list-style: none;
     margin: 0;
     padding: 0;
 }
@@ -87,7 +89,7 @@
 .btn-header {
     padding: 0 2px;
     margin: 0 3px;
-    height: 25px;
+    height: 30px;
     background-color: rgba(255, 255, 255, 0.15);
     border: none;
     color: white;
@@ -95,6 +97,9 @@
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .btn-header:hover {
@@ -148,9 +153,12 @@ button:active {
 .bars {
     margin-left: 5px;
     margin-right: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-.fa-question {
+.QuestionTag {
     color: black;
 }
 

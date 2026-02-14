@@ -4,6 +4,7 @@ import { AuthService } from '../../services/authentication/auth-service';
 import { Reload } from '../../services/reload';
 import { lastValueFrom } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { Message } from '../../services/message';
 
 @Component({
   selector: 'app-sign-in',
@@ -14,7 +15,7 @@ import { CommonModule } from '@angular/common';
 export class SignIn {
    @Input() email: string = '';
   @Input() password: string = '';
-  @Output() closeOpenSignUp: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() closeSignIn_OpenSignUp: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() isConnected: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   isSignIn: boolean = true;
@@ -24,7 +25,8 @@ export class SignIn {
   constructor(
     private formbuilder : FormBuilder,
     private auth: AuthService,
-    private reloadService: Reload
+    private reloadService: Reload,
+    private message: Message
   ) {
     this.form = formbuilder.group({
       email: ['', [Validators.required, Validators.email]],
@@ -60,8 +62,8 @@ export class SignIn {
         localStorage.setItem('isAuthenticated', 'true');
         localStorage.setItem('connected', 'true');
 
-        // Rediriger vers le tableau de bord ou une autre page protégée
-        this.isConnected.emit(true);
+        // Émettre les événements pour mettre à jour l'état de l'application
+        this.message.messageConnected(true);
       } else {
         this.errorMessage = 'Email ou mot de passe incorrect.';
       }
@@ -84,7 +86,7 @@ export class SignIn {
   // Method to handle sign-up redirect
   handleSignUpRedirect() {
     this.isSignIn = false;
-    this.closeOpenSignUp.emit(this.isSignIn);
+    this.closeSignIn_OpenSignUp.emit(this.isSignIn);
   }
 
 }

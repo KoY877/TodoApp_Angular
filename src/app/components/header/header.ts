@@ -7,20 +7,28 @@ import { EntityService } from '../../services/entity-service';
 import { Message } from '../../services/message';
 import { Reload } from '../../services/reload';
 import { AuthService } from '../../services/authentication/auth-service';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faBars, faBell, faQuestion } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-header',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule],
   templateUrl: './header.html',
   styleUrl: './header.css',
 })
 export class Header {
- @Input() name : any = "name"
+  // Font Awesome icons
+  faBars = faBars;
+  faBell = faBell;
+  faQuestion = faQuestion;
+
+  // Output events to communicate with parent component
+  @Input() name : any = "name"
   @Output() closeAllOpenDropdown: EventEmitter<void> = new EventEmitter<void>();
   searchControl: FormControl = new FormControl();
   private destroy$ = new Subject<void>();
 
-  isModalCreateBoard: boolean = false;
+  openModalCreateBoard: boolean = false;
   isCloseDropdown?: boolean = false
   boards?: Board []
   board?: Board []
@@ -37,7 +45,8 @@ export class Header {
     private entityService: EntityService,
     private detectChange: ChangeDetectorRef,
     private message: Message,
-    private authService: AuthService
+    private authService: AuthService,
+    private reload: Reload
   ) {
 
   }
@@ -106,8 +115,9 @@ export class Header {
   handleSignIn(){
     // Send sign in status to the Sign In component
     this.sign_in = true
+    this.sign_up = false
     this.message.messageSignIn(this.sign_in)
-
+    this.message.messageSignUp(this.sign_up)
   }
 
   // Sign Up
@@ -128,8 +138,9 @@ export class Header {
 
   // Open Create Board Modal
   onCreateBoard() {
-    this.isModalCreateBoard = true
-    this.message.messageBooleanOpenModal(this.isModalCreateBoard)
+    this.openModalCreateBoard = true
+    console.log('Sending openModalCreateBoard:', this.openModalCreateBoard);
+    this.message.messageBooleanOpenModal(this.openModalCreateBoard)
   }
 
   // Get Board data
@@ -179,14 +190,15 @@ export class Header {
 
   handleDisconnect(){
     // Remove authentication data from localStorage
-    localStorage.removeItem('Api-Secret');
-    localStorage.removeItem('User-Id');
-    localStorage.removeItem('userEmail');
-    localStorage.removeItem('isAuthenticated');
-    localStorage.removeItem('connected');
+    // localStorage.removeItem('Api-Secret');
+    // localStorage.removeItem('User-Id');
+    // localStorage.removeItem('userEmail');
+    // localStorage.removeItem('isAuthenticated');
+    // localStorage.removeItem('connected');
 
     // Update connection status
-    this.isConnected = false;
-    this.message.messageDisconnect(this.isConnected);
+
+    this.message.messageDisconnect();
+    this.message.messageConnected(false);
   }
 }

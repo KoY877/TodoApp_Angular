@@ -82,13 +82,13 @@ export class AuthService {
   }
 
   // SEARCH authentification
-  searchData<T extends { step1: { name: string } }>(entity: string, query: string): Observable<T[]> {
+  searchData<T extends {name: string  }>(entity: string, query: string): Observable<T[]> {
     const headers = this.getAuthAHeaders();
     return this.http.get<T[]>(`${this.apiUrl}/${entity}`, { headers }).pipe(
       map(items => {
         if (!Array.isArray(items)) return [];
         const normalizedQuery = query.toLowerCase();
-        return items.filter(item => item.step1.name.toLowerCase().includes(normalizedQuery));
+        return items.filter(item => item.name.toLowerCase().includes(normalizedQuery));
       })
     );
   }

@@ -1,0 +1,140 @@
+.overlay {
+    position: fixed;
+    z-index: 888;
+    opacity: 1;
+    top: 40%;
+    left: 9%;
+    width: 17vw;
+    background-color: black;
+}
+
+.change-role{
+    position: absolute;
+    top: 50%;
+    z-index: 1200;
+    width: 17vw;
+    top: 51%;
+    left: 12%;
+    background-color: #fafafa;
+    box-shadow: 0px 4px 10px 4px rgba(0, 0, 0, 0.2);
+}
+
+.dropdown-header {
+    background-color: #f4f4f4;
+
+}
+
+.dropdown-header > .title {
+    width: 100%;
+    text-align: center;
+    color: black;
+}
+
+.body-dropdown {
+    background-color: #ffffff;
+    padding: 20px 0px 5px 30px;
+}
+
+
+.choose-Input {
+    margin-right: 7px;
+}
+
+.fa-question {
+    margin-left: 2.5px;
+    margin-top: 2px;
+}
+
+.hover-container {
+    display: flex;
+    background-color: black;
+    color: white;
+    font-size: 8px;
+    border: 1px solid;
+    border-radius: 50%;
+    width: 14px !important;
+    height: 16px !important;
+    margin-left: 7px;
+    margin-top: 5px;
+}
+
+.hover-text {
+    display: block;
+    font-size: 12px;
+    background-color: #ffffff;
+    color: black;
+    visibility: hidden;
+    opacity: 0;
+    width: 85vh;
+    height: 15vh;
+    left: 20%;
+    border: 0.5px solid #ddd;
+    box-shadow: 0px 4px 10px 4px rgba(0, 0, 0, 0.2);
+    padding: 0.5rem;
+    margin-top: -4.5rem;
+    margin-left: -9rem;
+}
+
+.clip {
+    display: flex;
+    clip-path: polygon(48% 13%, 34% 0, 62% 0);
+    width: 25vh;
+    height: 25vh;
+    background-color: #ffffff;
+    border: 0.5px solid #ddd;
+    visibility: hidden;
+    opacity: 0;
+    margin-top: -0.05rem;
+    margin-left: -3.1rem;
+    box-shadow: 0px 4px 10px 4px rgba(0, 0, 0, 0.2);
+}
+
+.hover-container:hover .hover-text{
+    visibility: visible;
+    opacity: 1;
+    transition: (-50%, 120%);
+}
+
+.hover-container:hover .clip{
+    visibility: visible;
+    opacity: 1;
+    transition: (-50%, 120%);
+}
+
+.strong {
+    font-weight: bold;
+}
+
+.dropdown-button {
+    position: relative;
+    background-color: #49a849;
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    height: 2.5rem;
+    padding: 3px 20px 5px 20px !important;
+    color: white;
+    border: 1px solid #49a849;
+    border-radius: 5px;
+    box-shadow: 0 4px 4px #49a849;
+}
+
+.btn-close {
+    background-color: transparent;
+    font-size: 15px;
+    transition: background-color 0.3s ease;
+    outline: none;
+    box-shadow: none;
+    width: 22px;
+    height: 22px;
+    padding-left: 10px;
+}
+
+.btn-close:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    transition: none;
+}
+

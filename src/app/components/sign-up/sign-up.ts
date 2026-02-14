@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
 export class SignUp {
  @Input() email: string = '';
   @Input() password: string = '';
-  @Output() closeOpenSignUp: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() closeSignUp_OpenSignIn: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() isConnected: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   isSignIn: boolean = true;
@@ -83,7 +83,7 @@ export class SignUp {
   // Method to handle sign-up redirect
   handleSignUpRedirect() {
     this.isSignIn = false;
-    this.closeOpenSignUp.emit(this.isSignIn);
+    this.closeSignUp_OpenSignIn.emit(this.isSignIn);
   }
 
 }

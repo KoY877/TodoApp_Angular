@@ -1,0 +1,55 @@
+<div class="overlay"></div>
+<div class="change-role">
+    <div class="dropdown-header d-flex" >
+        <div class="title"><strong>Change role</strong></div>
+        <button type="button" class="btn-close d-flex justify-content-end" (click)="handleCloseDropdown()"></button>
+    </div>
+    <div class="body-dropdown" >
+        <strong>Role</strong>
+        <form action="" [formGroup]="form">
+            <div class="d-flex">
+                <input
+                  type="radio"
+                  value="Standard"
+                  name="chooseRole"
+                  formControlName="chooseRole"
+                  (change)="selectRadio(0)"
+                  class="choose-Input"
+                  checked = 'true' />
+                  Standard
+                  <span class="hover-container">
+                    <i class="fa fa-question" ></i>
+                    <span class="hover-position">
+                      <span class="hover-text">
+                        User can add, edit, delete and comment tasks on the board
+                      </span>
+                      <span class="clip"></span>
+                    </span>
+                  </span>
+              </div>
+              <div class="d-flex">
+                <input
+                  type="radio"
+                  value="Adminitrator"
+                  name="chooseRole"
+                  formControlName="chooseRole"
+                  (change)="selectRadio(1)"
+                  class="choose-Input"
+                  /> Administrator
+                  <span class="hover-container">
+                    <i class="fa fa-question"></i>
+                    <span class="hover-position">
+                      <span class="hover-text" >
+                        User can do everthing that <span class="strong">Standard</span> users can do and also administrate board members and board layout
+                      </span>
+                      <span class="clip"></span>
+                    </span>
+                  </span>
+              </div>
+        </form>
+    </div>
+    <hr class="m-3">
+    <div class="d-flex flex-end m-3">
+      <button class="dropdown-button mb-1" (click)="handleChangeRole($event, getBoardId)">Update</button>
+    </div>
+</div>
