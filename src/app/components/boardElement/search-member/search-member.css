@@ -1,6 +1,7 @@
 .dropdown-header {
     background-color: #f4f4f4;
     height: 2.5rem;
+    padding-top: 7px;
 }
 
 .dropdown-header > .title {
@@ -27,6 +28,7 @@
     box-shadow: none;
     width: 22px;
     height: 22px;
+    margin-right: 10px;
 }
 
 .btn-close:hover {
@@ -109,7 +111,7 @@ ul > li {
 
 
 .icons-member {
-    font-size: 9px;
+    font-size: 12px;
     width: 2rem;
     height: 2rem;
     border: 0.5px solid rgba(0, 0, 0, .35);
@@ -118,18 +120,20 @@ ul > li {
     margin-right: 1rem;
     color: darkred;
     position: relative;
-    top: 3px;
+    top: 2px;
     left: 4px;
 }
 
 .member-content{
-    font-size: 12px;
+    font-size: 15px;
 }
 
 .user {
     position: relative;
-    top: 8px;
+    top: 5px;
     left: 1px;
+    font-size: 12px;
+    font-weight: bold;
 }
 
 .role {

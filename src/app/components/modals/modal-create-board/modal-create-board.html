@@ -1,433 +1,402 @@
 
-<!-- Step 0 -->
-<div class="modal-backdrop" *ngIf="currentStep === 0" (click)="handleBackdropClick($event)">
-  <div class="modal-create-board" id="createBoardModal" (click)="$event.stopPropagation()">
-    <button class="close-button" (click)="handleCloseModal()" aria-label="Close">
-      ×
-    </button>
-    <div class="modal-header">
+  <!-- Step 0 -->
+  <div class="modal-backdrop" *ngIf="currentStep === 0" >
+    <div class="modal-create-board" id="createBoardModal" >
+      <div class="modal-header">
         Create board
-    </div>
-    <div class="modal-body">
-      <h4 class="fw-bold">General settings</h4>
+      </div>
+      <div class="modal-body">
+        <h4 class="fw-bold">General settings</h4>
 
-      <form action="" [formGroup]="form" >
-        <hr>
-        <div >
-            <div class="row form-inline">
-                <div class="col-md-3">
-                    <label for="" class="fw-semibold">Board name</label>
-                    <input type="text" formControlName="name" id="name" class="form-control">
-                    <div class="" *ngIf="isSubmitted">
+        <form action="" [formGroup]="form" >
+          <hr>
+          <div >
+              <div class="row form-inline">
+                  <div class="col-md-3">
+                      <label for="name" class="fw-semibold">Board name</label>
+                      <input type="text" formControlName="name" id="name" class="form-control">
+                      <div class="" *ngIf="isSubmitted">
 
-                    </div>
-                </div>
-            </div>
-        </div>
-        <hr>
-        <div class="flex flex-end">
-            <button class="button next" type="button" (click)="handleNextStepPage_1($event)">Next</button>
-        </div>
-      </form>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <hr>
+          <div class="flex flex-end">
+              <button class="button next" type="button" (click)="handleNextStepPage_1($event)">Next</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
-</div>
-<!-- End backdrop Step 0 -->
+  <!-- End backdrop Step 0 -->
 
-<!-- Step 1 -->
-<div class="modal-backdrop" *ngIf="currentStep === 1" (click)="handleBackdropClick($event)">
-  <div class="modal-create-board" id="createBoardModal" (click)="$event.stopPropagation()">
-    <button class="close-button" (click)="handleCloseModal()" aria-label="Close">
-      ×
-    </button>
-    <div class="modal-header">
-        Create board
-    </div>
-    <div class="modal-body">
-      <h4 class="fw-bold">Columns</h4>
-      <form action="" [formGroup]="form" >
-        <hr>
-        <div formArrayName="columns" class="mb-3">
+  <!-- Step 1 -->
+  <div class="modal-backdrop" *ngIf="currentStep === 1" >
+    <div class="modal-create-board" id="createBoardModal" >
 
-          <div
-            *ngFor="let row of columns.controls; let i = index"
-            [formGroupName]="i"
-            [attr.id]="'row-' + i"
-            draggable="true"
-            (dragstart)="onDragStart(i)"
-            (dragend)="onDragEnd()"
-            (dragover)="onDragOver($event)"
-            (drop)="onDrop($event, i)"
-            class="draggable-row"
-          >
+      <div class="modal-header">
+          Create board
+      </div>
+      <div class="modal-body">
+        <h4 class="fw-bold">Columns</h4>
+        <form action="" [formGroup]="form" >
+          <hr>
+          <div formArrayName="columns" class="mb-3">
 
-            <div  class="row align-items-center margin">
-              <div class="col-md-3 col-3 flex">
-                <!-- Icone -->
-                <i class="fa fa-grip-vertical draggable-icon icons"></i>
+            <div
+              *ngFor="let row of columns.controls; let i = index"
+              [formGroupName]="i"
+              [attr.id]="'row-' + i"
+              draggable="true"
+              (dragstart)="onDragStart(i)"
+              (dragend)="onDragEnd()"
+              (dragover)="onDragOver($event)"
+              (drop)="onDrop($event, i)"
+              class="draggable-row"
+            >
 
-                <!-- To-Do -->
-                <input
-                    type="text"
-                    formControlName="columnName"
-                    class="form-control mx-2 flex-grow-1 "
-                    placeholder=""
-                />
+              <div  class="row align-items-center margin">
+                <div class="col-md-3 col-3 flex">
+                  <!-- Icone -->
+                  <i class="fa fa-grip-vertical draggable-icon icons"></i>
 
-                <!--  Remove button -->
-                <button
-                    id="remove"
-                    type="button"
-                    *ngIf="isButtonRemove"
-                    class="buttonRemove btn-outline-secondary previous height"
-                    (click)="removeRow(i)"
-                >
-                  Remove
-                </button>
+                  <!-- To-Do -->
+                  <input
+                      type="text"
+                      formControlName="columnName"
+                      class="form-control mx-2 flex-grow-1 "
+                      placeholder=""
+                  />
+
+                  <!--  Remove button -->
+                  <button
+                      id="remove"
+                      type="button"
+                      *ngIf="isButtonRemove"
+                      class="buttonRemove btn-outline-secondary previous height"
+                      (click)="removeRow(i)"
+                  >
+                    Remove
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <!-- Bouton Ajouter -->
-        <button  class="button previous btnWidth btn-outline-secondary mt-2 mb-2" (click)="addRow()">
-          Add Column
-        </button>
+          <!-- Bouton Ajouter -->
+          <button  class="button previous btnWidth btn-outline-secondary mt-2 mb-2" (click)="addRow()">
+            Add Column
+          </button>
 
-        <hr>
-        <div class="flex jcsb">
-          <button class="button previous bg-outline-secondary " (click)="prevStep()"> Previous</button>
+          <hr>
+          <div class="flex jcsb">
+            <button class="button previous bg-outline-secondary " (click)="prevStep()"> Previous</button>
 
-          <button class="button next  mr-auto" (click)="handleNextStepPage_2()"> Next</button>
-        </div>
-      </form>
+            <button class="button next  mr-auto" (click)="handleNextStepPage_2()"> Next</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
-</div>
-<!-- End backdrop Step 1 -->
+  <!-- End backdrop Step 1 -->
 
-<!-- Step 2 -->
-<div class="modal-backdrop" *ngIf="currentStep === 2" (click)="handleBackdropClick($event)">
-  <div class="modal-create-board" id="createBoardModal"  (click)="$event.stopPropagation()">
-    <button class="close-button" (click)="handleCloseModal()" aria-label="Close">
-      ×
-    </button>
+  <!-- Step 2 -->
+  <div class="modal-backdrop" *ngIf="currentStep === 2" >
+    <div class="modal-create-board" id="createBoardModal"  >
 
-    <div class="modal-header">
-        Create board
-    </div>
-    <div class="modal-body" *ngIf="(isDone && isDoneDeleted)">
-        <h4 class="fw-bold">Limit Work in Progress (WIP)</h4>
-        <p class="info"> Limit how many tasks you are allowed to have in a certain column. That will help you finish existing tasks instead of starting new tasks. <br><br> Reducing multi-tasking will make you <strong>more focused</strong> and give you a <strong>better flow</strong>. </p>
-        <form action="" [formGroup]="form" >
-            <hr>
-            <div >
-                <div formArrayName="added_columns">
-                    <div
-                        *ngFor="let row of added_columns.controls; let i = index"
-                        [formGroupName]="i"
-                    >
-                        <div class="row ">
-                            <div class="form-inline d-flex">
-                                <label for="" class="label fw-semibold">{{row.get('columnName')?.value | camelcase}}</label>
-                                <input type="number" formControlName="limitWorkInProgress" class="form-control-1">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <hr>
-            <div class="flex jcsb">
-                <button class="button previous bg-outline-secondary " (click)="handlePrevStep()" > Previous</button>
-                <button class="button next" type="submit" (click)="handleInviteMember0()">Next</button>
-            </div>
-        </form>
-    </div>
-    <div class="modal-body" *ngIf="!isDone && isDoneDeleted">
-        <h4 class="fw-bold">Archiving</h4>
-        <p class="info">  There is no need to manually archive finished tasks. When you move tasks to the archiving column they are grouped by the date they were finished.
-
-            <a (click)="toggleText()" *ngIf="!isExpanded" class="show">
-                Show more...
-            </a>
-
-            <span *ngIf="isExpanded">
-                <br><br>
-                        Only the 20 most recent tasks are shown on the board. You can still access archived tasks.
-                <br><br>
-                <a (click)="toggleText()" *ngIf="isExpanded" class="show">
-                    Show less
-                </a>
-            </span>
-        </p>
-        <form action="" [formGroup]="form" >
-            <hr>
-            <div >
-
-                <label for="">Where do you put your finished tasks?</label>
-                <div class="d-flex" >
-                    <input
-                        type="radio"
-                        class="form-control-2 "
-                        formControlName="globalOption"
-                        [value]="'finished task in '"
-                        name="globalOption"
-                        (change)="isRadioDisabled('global')"
-
-                    >
-
-                  <div >
-                        <select id="task-select"
-                                class="form-select ms-2"
-                                value="selectedTask"
-                                formControlName="selectedTask"
-                                formArrayName="columns2"
-                        >
-                            <option
-                                [value]="row.get('name')?.value"
-                                *ngFor="let row of added_columns.controls; let i = index"
-                                [formGroupName]="i"
-                                [selected]="isLastWithValue(i)"
-                                >{{row.get('name')?.value | camelcase}}
-                            </option>
-                        </select>
+      <div class="modal-header">
+          Create board
+      </div>
+      <div class="modal-body" *ngIf="(isDone && isDoneDeleted)">
+          <h4 class="fw-bold">Limit Work in Progress (WIP)</h4>
+          <p class="info"> Limit how many tasks you are allowed to have in a certain column. That will help you finish existing tasks instead of starting new tasks. <br><br> Reducing multi-tasking will make you <strong>more focused</strong> and give you a <strong>better flow</strong>. </p>
+          <form action="" [formGroup]="form" >
+              <hr>
+              <div >
+                  <div formArrayName="added_columns">
+                      <div
+                          *ngFor="let row of added_columns.controls; let i = index"
+                          [formGroupName]="i"
+                      >
+                          <div class="row ">
+                              <div class="form-inline d-flex">
+                                  <label class="label fw-semibold">{{row.get('columnName')?.value | camelcase}}</label>
+                                  <input type="number" formControlName="limitWorkInProgress" class="form-control-1">
+                              </div>
+                          </div>
+                      </div>
                   </div>
-                </div>
-                <div class="d-flex">
+              </div>
+              <hr>
+              <div class="flex jcsb">
+                  <button class="button previous bg-outline-secondary " (click)="handlePrevStep()" > Previous</button>
+                  <button class="button next" type="submit" (click)="handleInviteMember0()">Next</button>
+              </div>
+          </form>
+      </div>
+      <div class="modal-body" *ngIf="!isDone && isDoneDeleted">
+          <h4 class="fw-bold">Archiving</h4>
+          <p class="info">  There is no need to manually archive finished tasks. When you move tasks to the archiving column they are grouped by the date they were finished.
+
+              <a (click)="toggleText()" *ngIf="!isExpanded" class="show">
+                  Show more...
+              </a>
+
+              <span *ngIf="isExpanded">
+                  <br><br>
+                          Only the 20 most recent tasks are shown on the board. You can still access archived tasks.
+                  <br><br>
+                  <a (click)="toggleText()" *ngIf="isExpanded" class="show">
+                      Show less
+                  </a>
+              </span>
+          </p>
+          <form action="" [formGroup]="form" >
+              <hr>
+              <div >
+
+                  <label>Where do you put your finished tasks?</label>
+                  <div class="d-flex" >
                     <input
-                        type="radio"
-                        class="form-control-2 "
-                        formControlName="globalOption"
-                        [value]="'Add a Done column for me'"
-                        name="globalOption"
-                        (change)="isRadioDisabled('global')"
-
+                      type="radio"
+                      class="form-control-2 "
+                      formControlName="globalOption"
+                      [value]="'finished task in '"
+                      name="globalOption"
+                      (change)="isRadioDisabled('global')"
                     >
-                        Add a "Done" column for me
-                </div>
-                <div class="d-flex">
+
+                    <div>
+                      <select id="task-select" class="form-select ms-2" formControlName="selectedTask">
+                          <option *ngFor="let row2 of added_columns.controls; let i = index"
+                            [value]="row2.get('columnName')?.value"
+                            [selected]="isLastWithValue(i)">
+                            {{row2.get('columnName')?.value | camelcase}}
+                          </option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="d-flex">
                     <input
-                        type="radio"
-                        class="form-control-2 "
-                        formControlName="globalOption"
-                        [value]="'Not on this board'"
-                        name="globalOption"
-                        (change)="isRadioDisabled('global')"
-
+                      type="radio"
+                      class="form-control-2 "
+                      formControlName="globalOption"
+                      [value]="'Add a Done column for me'"
+                      name="globalOption"
+                      (change)="isRadioDisabled('global')"
                     >
-                        Not on this board
-                </div>
+                    Add a "Done" column for me
+                  </div>
+                  <div class="d-flex">
+                      <input
+                          type="radio"
+                          class="form-control-2 "
+                          formControlName="globalOption"
+                          [value]="'Not on this board'"
+                          name="globalOption"
+                          (change)="isRadioDisabled('global')"
 
-            </div>
-            <hr>
-            <div class="flex jcsb">
-                <button class="button previous bg-outline-secondary " (click)="handlePrevTaskStep()"> Previous</button>
-                <button class="button next" type="submit" (click)="handleLimitProgress()">Next</button>
-            </div>
-        </form>
-    </div>
-    <div class="modal-body" *ngIf="(isDone && !isDoneDeleted) || (!isDone && !isDoneDeleted)">
-        <h4 class="fw-bold">Archiving</h4>
-        <p class="info">  There is no need to manually archive finished tasks. When you move tasks to the archiving column they are grouped by the date they were finished.
+                      >
+                          Not on this board
+                  </div>
 
-            <a (click)="toggleText()" *ngIf="!isExpanded" class="show">
-                Show more...
-            </a>
+              </div>
+              <hr>
+              <div class="flex jcsb">
+                  <button class="button previous bg-outline-secondary " (click)="handlePrevTaskStep()"> Previous</button>
+                  <button class="button next" type="submit" (click)="handleLimitProgress()">Next</button>
+              </div>
+          </form>
+      </div>
+      <div class="modal-body" *ngIf="(isDone && !isDoneDeleted) || (!isDone && !isDoneDeleted)">
+          <h4 class="fw-bold">Archiving</h4>
+          <p class="info">  There is no need to manually archive finished tasks. When you move tasks to the archiving column they are grouped by the date they were finished.
 
-            <span *ngIf="isExpanded">
-                <br><br>
-                        Only the 20 most recent tasks are shown on the board. You can still access archived tasks.
-                <br><br>
-                <a (click)="toggleText()" *ngIf="isExpanded" class="show">
-                    Show less
-                </a>
-            </span>
-        </p>
-        <form action="" [formGroup]="form" >
-            <hr>
-            <div >
+              <a (click)="toggleText()" *ngIf="!isExpanded" class="show">
+                  Show more...
+              </a>
 
-                    <label for="">Where do you put your finished tasks?</label>
-                    <div class="d-flex">
-                        <input
-                            type="radio"
-                            class="form-control-2 "
-                            formControlName="globalOption"
-                            [value]="'finished task in '"
-                            name="globalOption"
-                            (change)="isRadioDisabled('task')"
+              <span *ngIf="isExpanded">
+                  <br><br>
+                          Only the 20 most recent tasks are shown on the board. You can still access archived tasks.
+                  <br><br>
+                  <a (click)="toggleText()" *ngIf="isExpanded" class="show">
+                      Show less
+                  </a>
+              </span>
+          </p>
+          <form action="" [formGroup]="form" >
+              <hr>
+              <div >
 
-                        >
-                        <div >
-                            <select id="task-select"
-                                    class="form-select ms-2"
-                                    value="selectedTask"
-                                    formControlName="selectedTask"
-                                    formArrayName="columns2"
+                      <label>Where do you put your finished tasks?</label>
+                      <div class="d-flex">
+                          <input
+                              type="radio"
+                              class="form-control-2 "
+                              formControlName="globalOption"
+                              [value]="'finished task in '"
+                              name="globalOption"
+                              (change)="isRadioDisabled('task')"
 
-                            >
-                            <option
-                                [value]="row2.get('name')?.value"
-                                *ngFor="let row2 of added_columns.controls; let i = index"
-                                [formGroupName]="i"
-                                [selected]="isLastWithValue(i)"
-                                >{{row2.get('name')?.value | camelcase}}
-                            </option>
+                          >
+                          <div>
+                            <select id="task-select" class="form-select ms-2" formControlName="selectedTask">
+                                <option *ngFor="let row2 of added_columns.controls; let i = index"
+                                  [value]="row2.get('columnName')?.value"
+                                  [selected]="isLastWithValue(i)">
+                                  {{row2.get('columnName')?.value | camelcase}}
+                                </option>
                             </select>
-                        </div>
-                    </div>
+                          </div>
+                      </div>
 
-                    <div class="d-flex">
-                        <input
-                            type="radio"
-                            class="form-control-2 "
-                            formControlName="globalOption"
-                            [value]="'Not on this board'"
-                            name="globalOption"
-                            (change)="isRadioDisabled('global')"
+                      <div class="d-flex">
+                          <input
+                              type="radio"
+                              class="form-control-2 "
+                              formControlName="globalOption"
+                              [value]="'Not on this board'"
+                              name="globalOption"
+                              (change)="isRadioDisabled('global')"
 
-                            >    Not on this board
-                    </div>
+                              >    Not on this board
+                      </div>
 
-            </div>
-            <hr>
-            <div class="flex jcsb">
-                <button class="button previous bg-outline-secondary " (click)="handlePrevTaskStep()"> Previous</button>
-                <button class="button next" type="submit" (click)="handleLimitProgress()">Next</button>
-            </div>
-        </form>
-    </div>
+              </div>
+              <hr>
+              <div class="flex jcsb">
+                  <button class="button previous bg-outline-secondary " (click)="handlePrevTaskStep()"> Previous</button>
+                  <button class="button next" type="submit" (click)="handleLimitProgress()">Next</button>
+              </div>
+          </form>
+      </div>
 
-  </div>
-</div>
-<!-- End backdrop Step 2 -->
-
-<!-- Step 3 -->
-<div class="modal-backdrop"  *ngIf="currentStep === 3 || limitProgress " (click)="handleBackdropClick($event)">
-  <div class="modal-create-board" id="createBoardModal"  (click)="$event.stopPropagation()">
-    <button class="close-button" (click)="handleCloseModal()" aria-label="Close">
-      ×
-    </button>
-
-    <div class="modal-header">
-      Create board
-    </div>
-    <div class="modal-body" >
-        <h4 class="fw-bold">Limit Work in Progress (WIP)</h4>
-        <p class="info"> Limit how many tasks you are allowed to have in a certain column. That will help you finish existing tasks instead of starting new tasks. <br><br> Reducing multi-tasking will make you <strong>more focused</strong> and give you a <strong>better flow</strong>. </p>
-        <form action="" [formGroup]="form" >
-            <hr>
-            <div >
-                <div formArrayName="added_columns">
-                    <div
-                        *ngFor="let row of added_columns.controls; let i = index"
-                        [formGroupName]="i"
-                    >
-                        <div class="row ">
-                            <div class="form-inline d-flex">
-                                <label for="" class="label fw-semibold">{{row.get('columnName')?.value | camelcase}}</label>
-                                <input type="number" formControlName="limitWorkInProgress" class="form-control-1">
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <hr>
-            <div class="flex jcsb">
-                <button class="button previous bg-outline-secondary " (click)="handlePrevChoiceStep()" > Previous</button>
-                <button class="button next" type="submit" (click)="handleInviteMember1()">Next</button>
-            </div>
-        </form>
     </div>
   </div>
-</div>
-<!-- End backdrop Step 3 -->
+  <!-- End backdrop Step 2 -->
 
-<!-- Step 4 -->
-<div class="modal-backdrop" *ngIf="currentStep === 4" (click)="handleBackdropClick($event)">
-  <div class="modal-create-board" id="createBoardModal"  (click)="$event.stopPropagation()">
-    <button class="close-button" (click)="handleCloseModal()" aria-label="Close">
-      ×
-    </button>
+  <!-- Step 3 -->
+  <div class="modal-backdrop"  *ngIf="currentStep === 3 || limitProgress ">
+    <div class="modal-create-board" id="createBoardModal"  >
 
-    <div class="modal-header">
+      <div class="modal-header">
         Create board
-    </div>
-    <div class="modal-body">
-        <h4 class="fw-bold">Invite members</h4>
+      </div>
+      <div class="modal-body" >
+          <h4 class="fw-bold">Limit Work in Progress (WIP)</h4>
+          <p class="info"> Limit how many tasks you are allowed to have in a certain column. That will help you finish existing tasks instead of starting new tasks. <br><br> Reducing multi-tasking will make you <strong>more focused</strong> and give you a <strong>better flow</strong>. </p>
+          <form action="" [formGroup]="form" >
+              <hr>
+              <div >
+                  <div formArrayName="added_columns">
+                      <div
+                          *ngFor="let row of added_columns.controls; let i = index"
+                          [formGroupName]="i"
+                      >
+                          <div class="row ">
+                              <div class="form-inline d-flex">
+                                  <label class="label fw-semibold">{{row.get('columnName')?.value | camelcase}}</label>
+                                  <input type="number" formControlName="limitWorkInProgress" class="form-control-1">
 
-        <form action="" [formGroup]="form" >
-            <hr>
-            Add emails for members that you want to invite to your board.
-            <div >
-                <div class="row row-email">
-                    <label for="" class="fw-semibold ">Email</label>
-                    <div class="col-md-3 flex gap-2">
-
-                        <input type="text" formControlName="email" id="email" class="form-control email ">
-
-                        <button
-                            id="invite"
-                            type="button "
-                            class="buttonInvite height"
-                            (click)="inviteMember($event)"
-                        >
-                            Invite member
-                        </button>
-
-                    </div>
-                    <table class="table" formArrayName="members" *ngIf="isEmailCreate">
-                        <thead class="table-color">
-                          <tr>
-                            <th class="email-content" scope="col">Invited member</th>
-                            <th scope="col">Board role</th>
-                            <th scope="col"></th>
-                          </tr>
-                        </thead>
-                        <tbody
-                            *ngFor="let row of members.controls; let i = index"
-                            [formGroupName]="i"
-                        >
-                          <tr>
-                            <td class="email-content"
-                                ata-bs-toggle="tooltip"
-                                data-bs-placement="top"
-                                title="{{ row.get('memberEmail')?.value }}"
-                            >{{row.get('memberEmail')?.value}}</td>
-                            <td>
-                                <select id="task-select"
-                                    class="form-select "
-                                    formControlName="role"
-                                >
-                                    <option value="Admnistrator" >Admnistrator</option>
-                                    <option value="Standard" >Standard</option>
-                                </select>
-                            </td>
-                            <td>
-                                <button
-                                    id="remove"
-                                    type="button"
-                                    *ngIf="isButtonRemove"
-                                    class="buttonRemove btn-outline-secondary previous height"
-                                    (click)="removeMember(i)"
-                                >
-                                    Remove
-                                </button>
-                            </td>
-                          </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <hr>
-            <div class="flex jcsb">
-                <button class="button previous bg-outline-secondary " (click)="handlePrevProgressStep()" > Previous</button>
-                <button class="button create" type="submit" (click)="handleSubmit($event)">Create Board</button>
-            </div>
-        </form>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <hr>
+              <div class="flex jcsb">
+                  <button class="button previous bg-outline-secondary " (click)="handlePrevChoiceStep()" > Previous</button>
+                  <button class="button next" type="submit" (click)="handleInviteMember1()">Next</button>
+              </div>
+          </form>
+      </div>
     </div>
   </div>
-</div>
-<!-- End backdrop Step 4 -->
+  <!-- End backdrop Step 3 -->
+
+  <!-- Step 4 -->
+  <div class="modal-backdrop" *ngIf="currentStep === 4" >
+    <div class="modal-create-board" id="createBoardModal"  >
+
+      <div class="modal-header">
+        Create board
+      </div>
+      <div class="modal-body">
+          <h4 class="fw-bold">Invite members</h4>
+
+          <form action="" [formGroup]="form" >
+              <hr>
+              Add emails for members that you want to invite to your board.
+              <div >
+                  <div class="row row-email">
+                      <label for="email" class="fw-semibold ">Email</label>
+                      <div class="col-md-3 flex gap-2">
+
+                          <input type="text" formControlName="email" id="email" class="form-control email ">
+
+                          <button
+                              id="invite"
+                              type="button "
+                              class="buttonInvite height"
+                              (click)="inviteMember($event)"
+                          >
+                              Invite member
+                          </button>
+
+                      </div>
+                      <table class="table" formArrayName="members" *ngIf="isEmailCreate">
+                          <thead class="table-color">
+                            <tr>
+                              <th class="email-content" scope="col">Invited member</th>
+                              <th scope="col">Board role</th>
+                              <th scope="col"></th>
+                            </tr>
+                          </thead>
+                          <tbody
+                              *ngFor="let row of members.controls; let i = index"
+                              [formGroupName]="i"
+                          >
+                            <tr>
+                              <td class="email-content"
+                                  ata-bs-toggle="tooltip"
+                                  data-bs-placement="top"
+                                  title="{{ row.get('memberEmail')?.value }}"
+                              >{{row.get('memberEmail')?.value}}</td>
+                              <td>
+                                  <select id="task-select"
+                                      class="form-select "
+                                      formControlName="role"
+                                  >
+                                      <option value="Admnistrator" >Admnistrator</option>
+                                      <option value="Standard" >Standard</option>
+                                  </select>
+                              </td>
+                              <td>
+                                  <button
+                                      id="remove"
+                                      type="button"
+                                      *ngIf="isButtonRemove"
+                                      class="buttonRemove btn-outline-secondary previous height"
+                                      (click)="removeMember(i)"
+                                  >
+                                      Remove
+                                  </button>
+                              </td>
+                            </tr>
+                          </tbody>
+                      </table>
+                  </div>
+              </div>
+              <hr>
+              <div class="flex jcsb">
+                  <button class="button previous bg-outline-secondary " (click)="handlePrevProgressStep()" > Previous</button>
+                  <button class="button create" type="submit" (click)="handleSubmit($event)">Create Board</button>
+              </div>
+          </form>
+      </div>
+    </div>
+  </div>
+  <!-- End backdrop Step 4 -->
 
 

@@ -5,46 +5,35 @@
 
         <div class="col-lg 12   " >
           <div class="dropdown " >
-              <button class="btn-header board" type="button" data-bs-toggle="dropdown" aria-expanded="false" *ngIf="isConnected">
-                  <div class="bars" (click)="handlecloseAllOpenDropdown()">
+              <button class="btn-header board" type="button" data-bs-toggle="dropdown" *ngIf="isConnected" >
+                  <div class="bars" (click)="handlecloseAllOpenDropdown()" >
                       <fa-icon [icon]="faBars"></fa-icon>
                       <span> Boards </span>
                   </div>
               </button>
-              <ul class="dropdown-menu">
-                  <li>
-                      <form action="">
-                          <div class="form-inline ">
-                              <input
-                                  type="text"
-                                  class="search "
-                                  [formControl]="searchControl"
-                                  placeholder="Search"
-                                  >
-                          </div>
-                      </form>
-                  </li>
-
+              <ul class="dropdown-menu" [ngClass]="{'show': isDropdownOpenBoards}">
+                <!-- Zone scrollable pour les boards -->
+                <div class="boards-list">
                   <li *ngFor="let item of boards" >
+                       <a class="dropdown-item "
+                          [ngClass]="{'activ': activeIndex === item!.name}"
+                          (click)="handleOpenBoard(item!.id!, item!.name)">
+                            {{ item?.name }}
+                        </a>
+                  </li>
+                </div>
 
-                      <a class="dropdown-item " [ngClass]="{'activ': activeIndex === item?.name}" (click)="handleOpenBoard(item?.id, item?.name)" *ngIf="!isResult ">
-                          {{ item?.name }}
-                      </a>
-                  </li>
-                  <li *ngFor="let result of results" >
-                      <a class="dropdown-item" [ngClass]="{'activ': activeIndex === result?.name}" (click)="handleOpenBoard(result?.id, result?.name)" *ngIf="isResult" >
-                          {{ result?.name }}
-                      </a>
-                  </li>
-                  <button
-                    class="button-create next"
-                    type="button"
-                    aria-expanded="false"
-                    [ngClass]="{'activ': activeIndex === 'createBoard'}"
-                    (click)="onCreateBoard()"
+                <!-- Bouton Create board toujours visible -->
+                <li>
+                    <button
+                        class="button-create next"
+                        type="button"
+                        [ngClass]="{'activ': activeIndex === 'createBoard'}"
+                        (click)="onCreateBoard()"
                     >
-                    Create board
-                  </button>
+                        Create board
+                    </button>
+                </li>
               </ul>
           </div>
 
@@ -61,43 +50,82 @@
             <button class="sign-up" type="button" (click)="handleSignUp()">Sign Up</button>
           </div>
 
-          <div class="menu-wrapper align-items-center justify-content-end " style="--bs-scroll-height: 100px; " *ngIf="isConnected">
-              <div class="dropdown">
-                  <button class="btn-header" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      <fa-icon [icon]="faBell" class="p-1"></fa-icon>
-                  </button>
-                  <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" href="#">Action</a></li>
-                    <li><a class="dropdown-item" href="#">Another action</a></li>
-                    <li><a class="dropdown-item" href="#">Something else here</a></li>
-                  </ul>
-              </div>
-              <div class="dropdown">
-                  <button class="btn-header" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      <div class="icons-back ">
-                          <fa-icon class="QuestionTag" [icon]="faQuestion"></fa-icon>
-                      </div>
-                  </button>
-                  <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" href="#">Action</a></li>
-                    <li><a class="dropdown-item" href="#">Another action</a></li>
-                    <li><a class="dropdown-item" href="#">Something else here</a></li>
-                  </ul>
-              </div>
-              <div class="dropdown">
-                  <button class="btn-header" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      <div class="icons-back">
-                          <span class=" fa user">CO</span>
-                      </div>
-                  </button>
-                  <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" href="#">Action</a></li>
-                    <li><a class="dropdown-item" href="#">Another action</a></li>
-                    <li><a class="dropdown-item" href="#" (click)="handleDisconnect(); $event.preventDefault()">Disconnect</a></li>
-                  </ul>
-              </div>
+          <div class="menu-wrapper align-items-center justify-content-end " style="--bs-scroll-height: 100px; "  *ngIf="isConnected">
+            <div class="dropdown">
+                <button class="btn-header" type="button" data-bs-toggle="dropdown"  >
+                    <div class="icons-back" (click)="handlecloseAllOpenDropdown()">
+                      <span class=" fa user">{{ ownerInitials }}</span>
+                    </div>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end"  [ngClass]="{'show': isDropdownOpenUser}">
+                  <li><a class="dropdown-item" href="#" (click)="handleEditProfile()">Edit Profile</a></li>
+                  <li><a class="dropdown-item" href="#" (click)="handleDisconnect(); $event.preventDefault()">Disconnect</a></li>
+                </ul>
+            </div>
           </div>
         </div>
       </div>
     </div>
 </nav>
+
+<!-- Edit Profile Modal -->
+<div
+  class="modal-overlay"
+  *ngIf="isEditProfileOpen"
+  (click)="handleCloseEditProfile()"
+>
+  <div
+    class="modal-profile"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="modal-header">
+      <strong>Edit Profile</strong>
+      <button
+        type="button"
+        class="btn-close"
+        (click)="handleCloseEditProfile()"
+      ></button>
+    </div>
+    <div class="modal-body">
+      <label for="usernameInput">Username</label>
+      <input
+        type="text"
+        id="usernameInput"
+        class="form-control mb-3"
+        [(ngModel)]="editedUsername"
+      />
+
+      <label for="emailInput">Email</label>
+      <input
+        type="email"
+        id="emailInput"
+        class="form-control mb-3"
+        [(ngModel)]="editedEmail"
+      />
+
+      <label for="passwordInput">New Password</label>
+      <input
+        type="password"
+        id="passwordInput"
+        class="form-control mb-3"
+        [(ngModel)]="editedPassword"
+      />
+
+      <label for="confirmPasswordInput">Confirm New Password</label>
+      <input
+        type="password"
+        id="confirmPasswordInput"
+        class="form-control mb-3"
+        [(ngModel)]="editedPasswordConfirm"
+      />
+
+
+      <button
+        class="btn btn-success mt-3 w-100"
+        (click)="handleUpdateProfile()"
+      >
+        Save Changes
+      </button>
+    </div>
+  </div>
+</div>

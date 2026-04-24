@@ -1,7 +1,20 @@
+.container-fluid{
+  position: relative;
+  margin-bottom: 3rem;
+  padding: 0px;
+  flex-grow: 1;
+
+
+}
+
+.containerHeight {
+  min-height: 100vh;
+}
+
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.35);
+  background: #d9edf7;
   z-index: 1040;
   display: flex;
   justify-content: center;

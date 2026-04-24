@@ -1,1 +1,107 @@
-<p>invite-member works!</p>
+<div class="dropdown-header d-flex ">
+  <button type="button" class="dropdown-btn-previous" (click)="prevStep()" *ngIf="currentStep === 2">
+    <fa-icon [icon]="faArrowLeft"></fa-icon>
+  </button>
+  <div class="title"><strong>Invite member</strong></div>
+  <button type="button" class="btn-close d-flex justify-content-end" (click)="handleCloseDropdown()"></button>
+</div>
+
+<div class="body-dropdown" *ngIf="currentStep === 1">
+  <form [formGroup]="form">
+    <div class="email-field">
+      <div class="p-1">
+        <div class="email-container">
+          <div class="tag-container">
+            <div *ngFor="let row of members.controls; let i = index" class="">
+              <div class="email-tag">
+                {{ row.get('memberEmail')?.value }}
+              </div>
+              <button (click)="removeEmail($event, i)" class="btn-close removeButton">X</button>
+            </div>
+          </div>
+
+          <input
+            type="email"
+            formControlName="email"
+            (keydown.enter)="addEmail($event, getBoardId)"
+            class="email-input"
+            placeholder="Email"
+          />
+        </div>
+        <div class="showEmailValue d-flex" *ngIf="isCompleteEmail">
+          <i class="fa fa-envelope"></i>
+          <span *ngIf="!isShowEmail">Enter a complete Email to invite</span>
+          <span *ngIf="isShowEmail">Invite <strong>{{emailValue}}</strong></span>
+        </div>
+      </div>
+    </div>
+    <hr class="m-3">
+    <div class="missing-user d-flex">
+      <div class="missing-user-text"><strong>Missing user?</strong> Type email to invite</div>
+      <button type="button" class="dropdown-button" (click)="nextStep($event, getBoardId)">Next</button>
+    </div>
+  </form>
+</div>
+
+<div class="body-dropdown" *ngIf="currentStep === 2">
+  <div class="email-field-2">
+    <form [formGroup]="form">
+      <div class="field-role p-3">
+        <div class="">
+          <div class="email-list d-flex">
+            <div *ngFor="let row of members.controls; let i = index"
+                class="email"
+                [style.color]="memberColors[i]">
+              {{ row.get('memberEmail')?.value | character }}
+            </div>
+          </div>
+        </div>
+
+        <label class="label" for="">Board role</label>
+
+        <div class="d-flex">
+          <input
+            type="radio"
+            value="Standard"
+            formControlName="chooseRole"
+            (change)="selectRadio(0)"
+            class="choose-Input"
+          />
+          Standard
+          <span class="hover-container">
+            <fa-icon [icon]="faQuestion"></fa-icon>
+            <span class="hover-position">
+              <span class="hover-text">
+                User can add, edit, delete and comment tasks on the board
+              </span>
+              <span class="clip"></span>
+            </span>
+          </span>
+        </div>
+        <div class="d-flex">
+          <input
+            type="radio"
+            value="Administrator"
+            formControlName="chooseRole"
+            (change)="selectRadio(1)"
+            class="choose-Input"
+          />
+          Administrator
+          <span class="hover-container">
+            <fa-icon [icon]="faQuestion"></fa-icon>
+            <span class="hover-position">
+              <span class="hover-text">
+                User can do everything that <span class="strong">Standard</span> users can do and also administrate board members and board layout
+              </span>
+              <span class="clip"></span>
+            </span>
+          </span>
+        </div>
+      </div>
+    </form>
+  </div>
+  <hr class="m-3">
+  <div class="d-flex flex-end m-3">
+    <button type="button" class="dropdown-button" (click)="handleInviteMember($event, getBoardId)">Invite</button>
+  </div>
+</div>

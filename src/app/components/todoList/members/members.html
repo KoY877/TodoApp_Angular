@@ -1,1 +1,61 @@
-<p>members works!</p>
+
+  <div class="dropdown-header d-flex ">
+    <div class="title"><strong>Members</strong></div>
+    <button type="button" class="btn-close d-flex justify-content-end" (click)="handleCloseDropdown(); $event.stopPropagation();"></button>
+  </div>
+  <div class="body-dropdown mb-0 ">
+    <form action="" [formGroup]="form">
+      <ul>
+        <li>
+          <form action="">
+            <div class="form-inline ">
+              <input type="text" class="search " [formControl]="searchControl" placeholder="Search">
+            </div>
+          </form>
+        </li>
+
+        <li class="dropdown-items" *ngIf="!isResult ">
+          <input type="checkbox" class="form-inline " [value]="ownerName" name="globalOption">
+          <div class="icons-member">
+            <span class="fa user">{{ownerInitials}}</span>
+          </div>
+          <div class="member-content">
+            <strong>{{ownerName}}</strong>
+            <div class="">Owner</div>
+          </div>
+        </li>
+
+        <li *ngFor="let item of members;">
+          <div class="dropdown-items" *ngIf="!isResult ">
+            <input type="checkbox" class="form-inline " [value]="item.id"
+              (change)="handleSelectedMember($event, item)" [checked]="item.checked">
+            <div class="icons-member">
+              <span class="fa user">{{item.memberEmail | character}}</span>
+            </div>
+            <div class="member-contents">
+              <strong>{{ item.memberEmail }}</strong>
+              <div class="role">Pending</div>
+            </div>
+          </div>
+        </li>
+        <li *ngFor="let result of results">
+          <div class="dropdown-items " *ngIf="isResult ">
+            <input type="checkbox" class="form-inline " [value]="result.id" formControlName="name" name="name">
+            <div class="icons-member">
+              <span class="fa user">{{result.memberEmail | character}}</span>
+            </div>
+            <div class="member-contents">
+              <strong>{{ result.memberEmail }}</strong>
+              <div class="role">Pending</div>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class=" dropdown-items mb-0" *ngIf="isResult && results?.length === 0">
+            <i>No member found</i>
+          </div>
+        </li>
+      </ul>
+    </form>
+  </div>
+

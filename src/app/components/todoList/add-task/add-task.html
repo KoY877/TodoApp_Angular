@@ -1,1 +1,160 @@
-<p>add-task works!</p>
+<div class="modal-create-board">
+  <div class="modal-board-info">
+    <div class="modal-content" [style.background]="selectedItem?.bgColor">
+      <div class="modal-header justify-content-end">
+        <button type="button" class="btn-close" (click)="handleCloseModal()"></button>
+      </div>
+      <div class="modal-body task">
+        <form action="" [formGroup]="form">
+
+          <!-- Add Task name -->
+          <div class="row form-inline mb-3">
+            <div class="col-md-12 ">
+              <input type="text" formControlName="name" id="name" placeholder="Task name..." class="form-control"
+                [style.background]="selectedItem?.bgColor">
+            </div>
+          </div>
+
+          <!-- Select color -->
+          <div class="row form-inline ms-2 mb-3">
+            <div class="col-md-1 task-color">
+              <div class="circle" [style.background]="selectedItem?.colorChoice"></div>
+            </div>
+            <div class="col-md-11 ">
+              <div class="custom-dropdown">
+                <div class="form-select " [style.background]="selectedItem?.bgColor"
+                  [style.borderColor]="selectedItem?.colorChoice">
+                  {{ selectedItem?.name}}
+                  <span class="icon"><i class="fa-solid fa-caret-down"></i></span>
+                </div>
+
+                <div class="dropdown-list">
+                  <div *ngFor="let row of colors.controls" class="dropdown-item" (click)="selectItem(row)">
+                    <span class="circle2" [style.background]="row.get('colorChoice')?.value"></span>
+                    {{ row.get('name')?.value | camelcase }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Add Member & Label & Description ... -->
+          <div class="row items mb-3">
+            <div class="item dropdown">
+              <button class="item-btn" (click)="handleDropdown('member'); $event.stopPropagation()">
+                <fa-icon [icon]="faUsers"></fa-icon>
+                Members
+              </button>
+              <div class="menu-dropdown menu-dropdown-start  pt-0 pb-0 pr-2 " [ngClass]="{'show': isMembers}" *ngIf="isMembers">
+                <app-members
+                  [members]="members"
+                  (sendSelectedMember)="handleSelectedMember($event)"
+                  (sendDeselectedMember)="handleDeselectedMember($event)"
+                  (closeDropdownMembers)="handleDropdown('member')">
+                </app-members>
+              </div>
+            </div>
+
+            <div class="item dropdown">
+              <button class="item-btn" (click)="handleDropdown('label'); $event.stopPropagation()">
+                <fa-icon [icon]="faTag"></fa-icon>
+                Labels
+              </button>
+              <div class="menu-dropdown menu-dropdown-start pt-0 pb-0 pr-2" [ngClass]="{'show': isLabels}" *ngIf="isLabels">
+                <app-labels
+                  [selectedLabels]="selectedLabels"
+                  (sendSelectedLabel)="handleSelectedLabel($event)"
+                  (sendDeselectedLabel)="handleDeselectedLabel($event)"
+                  (closeDropdownLabels)="handleDropdown('label')">
+                </app-labels>
+              </div>
+            </div>
+
+            <div class="item dropdown">
+              <button class="item-btn" (click)="handleDropdown('time'); $event.stopPropagation()">
+                <fa-icon [icon]="faClock"></fa-icon>
+                Add time estimate
+              </button>
+              <div class="menu-dropdown menu-dropdown-end pt-0 pb-0 pr-2" [ngClass]="{'show': isEstimateTime}"
+                *ngIf="isEstimateTime">
+                <div class="dropdown-header d-flex ">
+                  <div class="title"><strong>Add time estimate</strong></div>
+                  <button type="button" class="btn-close d-flex justify-content-end"
+                    (click)="handleDropdown('time'); $event.stopPropagation();"></button>
+                </div>
+                <div class="body-dropdown mb-0">
+                  <form action="" >
+                    <input type="number" class="form-control time-input" placeholder="0h" formControlName="time">
+                    <hr>
+                    <button type="submit" class="" (click)="handleAddTime(); $event.preventDefault();">Add</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            <div class="item">
+              <button class="item-btn" (click)="handleDropdown('description'); $event.stopPropagation()">
+                <fa-icon [icon]="faListAlt"></fa-icon>
+                Description
+              </button>
+            </div>
+          </div>
+
+          <!-- Show Member & Label & Description ... -->
+          <div class="row items mb-3">
+            <!-- Show members -->
+            <div class="item" *ngIf="isMemberSelected">
+              Members
+              <br>
+              <div class=" d-flex">
+                <div class=" selected-member">
+                  <div class="icons-member" *ngFor="let item of selectedMembers"
+                    [style.borderColor]="selectedItem?.colorChoice">
+                    <span class="fa user">{{item?.memberEmail || item | character}}</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Show labels -->
+            <div class="item" *ngIf="isLabelSelected">
+              Labels
+              <br>
+              <div class="d-flex flex-wrap gap-2 pt-2">
+                <div class="label-tag" *ngFor="let label of selectedLabels">
+                  {{label?.label}}
+                </div>
+              </div>
+            </div>
+
+            <!-- Show time estimate -->
+            <div class="item" *ngIf="isTimeValue">
+              Time Estimate
+              <br>
+              <div class="d-flex">
+                <div class="time-estimate" [style.fontSize]="'20px'">
+                  {{ time }} h
+                </div>
+             </div>
+            </div>
+          </div>
+
+          <!-- Description editor (inline, above Save changes) -->
+          <div class="row mb-3" *ngIf="isDescription">
+            <div class="col-12">
+              <app-description
+                [initialDescription]="form.get('description')?.value || ''"
+                (descriptionChange)="handleDescriptionChange($event)">
+              </app-description>
+            </div>
+          </div>
+
+        </form>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" (click)="handleSubmitAddTask()">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

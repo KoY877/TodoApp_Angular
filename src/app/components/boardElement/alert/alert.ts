@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 
 @Component({
   selector: 'app-alert',
@@ -7,5 +7,14 @@ import { Component } from '@angular/core';
   styleUrl: './alert.css',
 })
 export class Alert {
+  @Output() cancel: EventEmitter<void> = new EventEmitter<void>();
+  @Output() discard: EventEmitter<void> = new EventEmitter<void>();
 
+  handleCancel() {
+    this.cancel.emit();
+  }
+
+  handleDiscard(){
+    this.discard.emit()
+  }
 }

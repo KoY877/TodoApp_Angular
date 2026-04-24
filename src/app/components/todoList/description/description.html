@@ -1,1 +1,20 @@
-<p>description works!</p>
+<div class="editorField mt-1">
+  <div class="toolbar d-flex mb-2">
+    <div class="tab-group">
+      <button class="tab-btn" [class.active]="!isPreviewMode" (click)="isPreviewMode && togglePreview(); $event.stopPropagation();">Edit</button>
+      <button class="tab-btn" [class.active]="isPreviewMode" (click)="!isPreviewMode && togglePreview(); $event.stopPropagation();">Preview</button>
+    </div>
+    <div class="format-group">
+      <button (click)="format('bold'); $event.stopPropagation();" [disabled]="isPreviewMode"><b>B</b></button>
+      <button (click)="format('italic'); $event.stopPropagation();" [disabled]="isPreviewMode"><i>I</i></button>
+    </div>
+  </div>
+
+  <div
+    class="editor"
+    contenteditable="true"
+    (input)="onContentChange($event)"
+    (paste)="onPaste($event)"
+    #textArea>
+  </div>
+</div>

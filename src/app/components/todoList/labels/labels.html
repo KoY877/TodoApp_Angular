@@ -1,1 +1,47 @@
-<p>labels works!</p>
+<div class="">
+  <div class="dropdown-header d-flex ">
+    <div class="title"><strong>Labels</strong></div>
+    <button type="button" class="btn-close d-flex justify-content-end" (click)="handleCloseDropdown(); $event.stopPropagation();"></button>
+  </div>
+
+  <div class="body-dropdown mb-0 ">
+    <form action="" [formGroup]="form">
+      <div class="label-field">
+        <div class="label-container ">
+          <div class="tag-container">
+            <div *ngFor="let item of allLabels; let i = index" class="">
+              <div class="label-tag ">
+                {{ item?.label}}
+                <button (click)="removeLabelFromDisplay($event, i); $event.stopPropagation();" class="btn-close removeButton2">X</button>
+              </div>
+            </div>
+          </div>
+
+          <input type="text" formControlName="label" name="label" maxlength="30" (keydown.enter)="addLabel($event)"
+            class="label-input" placeholder="Add labels" />
+        </div>
+        <div class="item">
+          <button class="item-btn dropdown" (click)="handleOpenLabel('label'); $event.stopPropagation();">
+            <fa-icon [icon]="faBars"></fa-icon>
+          </button>
+          <div class="menu-dropdown menu-dropdown-end pt-0 pb-0 pr-2 " [ngClass]="{'show': isViewLabels}" *ngIf="isViewLabels" (click)="$event.stopPropagation()">
+            <ul formArrayName="labels">
+              <li *ngFor="let item of labels.value; let i = index" [formGroupName]="i" class="dropdown-items" (click)="$event.stopPropagation()">
+                <input type="checkbox" class="form-inline " [value]="item.label"
+                  (change)="handleSelectedLabel($event, item, i); $event.stopPropagation()" [checked]="item.checked">
+                <div class="label-content">
+                  {{item.label}}
+                </div>
+              </li>
+            </ul>
+            <div class="drop-footer">
+              <button class="done" (click)="handleCloseDropdownLabels(); $event.stopPropagation();">
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

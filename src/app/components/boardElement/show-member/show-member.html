@@ -1,14 +1,15 @@
-<div class="flex member" *ngIf="memberData ">
-  <div class="icons-back-board">
+<div class="flex member" *ngIf="memberData && memberData.length > 0">
+  <div class="icons-back-board ">
     <span class="fa user">{{memberData[0].memberEmail | character}}</span>
   </div>
   <div class="flex">
     <div class="textWidth">
+
       <strong class="email-content">{{memberData[0].memberEmail}}</strong>
       <div><i>Pending Invitation</i></div>
-      <div class="role" (click)="handleMemberEdit(memberData[0].memberEmail, getBoardId)">{{memberData[0].role}}<i class="fa-solid fa-pencil"></i></div>
+      <div class="role" (click)="handleMemberEdit(memberData[0].memberEmail, getBoardId)">{{memberData[0].role}} <span class="icon"><fa-icon [icon]="faPencil"  class="pencil"></fa-icon></span></div>
       <button class="button previous ">Send reminder</button>
-      <button class="button previous" (click)="handlRemoveMember(memberData[0].memberEmail, getBoardId)">Remove from board</button>
+      <button class="button previous" (click)="handlRemoveMember(memberData[0])">Remove from board</button>
     </div>
     <button type="button" class="btn-close" (click)="handleCloseDropdown()" *ngIf="currentStep !== 2"></button>
   </div>
@@ -18,5 +19,4 @@
   [getBoardId]="getBoardId"
   [selectedMember]="selectedMember"
   (closeChangeRole)="handleCloseChangeRole($event)"
-
 ></app-change-role>

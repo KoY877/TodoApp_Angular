@@ -15,10 +15,10 @@
                   formControlName="chooseRole"
                   (change)="selectRadio(0)"
                   class="choose-Input"
-                  checked = 'true' />
+                  />
                   Standard
                   <span class="hover-container">
-                    <i class="fa fa-question" ></i>
+                    <fa-icon [icon]="faQuestion"></fa-icon>
                     <span class="hover-position">
                       <span class="hover-text">
                         User can add, edit, delete and comment tasks on the board
@@ -30,14 +30,14 @@
               <div class="d-flex">
                 <input
                   type="radio"
-                  value="Adminitrator"
+                  value="Administrator"
                   name="chooseRole"
                   formControlName="chooseRole"
                   (change)="selectRadio(1)"
                   class="choose-Input"
                   /> Administrator
                   <span class="hover-container">
-                    <i class="fa fa-question"></i>
+                    <fa-icon [icon]="faQuestion"></fa-icon>
                     <span class="hover-position">
                       <span class="hover-text" >
                         User can do everthing that <span class="strong">Standard</span> users can do and also administrate board members and board layout

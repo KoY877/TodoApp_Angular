@@ -1,0 +1,252 @@
+.dropdown-header {
+  background-color: #f4f4f4;
+  min-width: 23rem;
+  max-width: 28rem;
+  height: 2.5rem;
+  padding: 10px 5px;
+}
+
+.dropdown-header>.title {
+  width: 100%;
+  text-align: center;
+  color: black;
+}
+
+.body-dropdown {
+  background-color: #fff;
+  overflow: visible;
+  min-height: 1rem;
+}
+
+.btn-close {
+  background-color: transparent;
+  font-size: 12px;
+  transition: background-color 0.3s ease;
+  outline: none;
+  box-shadow: none;
+  width: 22px;
+  height: 22px;
+  margin-top: -3px;
+}
+
+.btn-close:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  transition: none;
+}
+
+.removeButton2 {
+  background: none;
+  border: none;
+  margin-left: 3px;
+  margin-top: 2px;
+  padding-top: 0px;
+  color: #333;
+  cursor: pointer;
+  font-size: 10px;
+}
+
+.label-field {
+  min-height: 0.5rem;
+  display: flex;
+  padding-right: 5px;
+}
+
+.item {
+  width: 10%;
+  border: 0.3px solid #000;
+  border-left: none;
+  margin: 6px 0px 6px 0px;
+}
+
+.item-btn {
+  width: 100%;
+  min-height: 100%;
+  border: none;
+}
+
+.email-field-2 {
+  min-height: 8rem;
+}
+
+.label-input {
+  background-color: #ffffff !important;
+  border: none;
+  min-width: 64px;
+  font-size: 12px;
+}
+
+.label-input:focus {
+  outline: none;
+  box-shadow: none;
+  border-color: inherit;
+}
+
+.label-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 5px;
+  border: 0.3px solid #000;
+  margin: 6px 0px 6px 6px;
+  width: 90%;
+}
+
+.tag-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.email-label input {
+  display: block;
+  min-width: 10px !important;
+  max-width: calc(100% - 10px);
+  border: none;
+  outline: none;
+  font-size: 13px;
+  background-color: #ffff;
+  border: none;
+  transition: width 0.3s ease;
+}
+
+.label-tag {
+  display: inline-flex;
+  align-items: center;
+  background-color: #ffffff;
+  border: 0.5px solid #ddd;
+  border-radius: 3px;
+  padding: 3px;
+  margin-bottom: 3px;
+  font-size: 12px;
+  color: #333;
+
+}
+
+.email-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0px;
+}
+
+.email-list .email {
+  font-size: 9px;
+  font-weight: bold;
+  width: 25px;
+  height: 24px;
+  border: 1px solid #555;
+  border-radius: 50%;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  margin-left: -4px;
+}
+
+.showEmailValue {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  font-size: 14px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  margin: 0px 10px 0px 10px;
+  box-shadow: 0px 2px 4px 2px rgba(0, 0, 0, 0.05);
+  background-color: #ffffff;
+}
+
+.removeButton {
+  background: none;
+  border: none;
+  margin-left: 5px;
+  padding-top: 0px;
+  color: #333;
+  cursor: pointer;
+  font-size: 14px;
+
+}
+
+.removeButton:hover {
+  color: black;
+  font-weight: bold;
+}
+
+.removeButton:active {
+  border: 1px solid #ddd;
+}
+
+ul {
+  margin: 0px;
+  padding: 0px;
+  list-style: none;
+  min-height: 1rem;
+  max-height: 7rem;
+  overflow: scroll;
+}
+
+ul>li {
+  border: 1px solid #ccc;
+  margin: 0px;
+  padding: 0px;
+
+}
+
+
+.dropdown-items {
+  display: flex;
+  min-width: 100%;
+  padding: 0px 5px 0px 5px !important;
+  clear: both;
+  font-weight: 400;
+  color: #000;
+  text-align: inherit;
+  text-decoration: none;
+  white-space: nowrap;
+  background-color: transparent;
+  border: 0;
+  height: 29px;
+
+}
+
+.dropdown-items:hover {
+  background-color: #0852c2;
+  color: #fff;
+}
+
+.dropdown-items:focus {
+  background-color: #f0efef;
+}
+
+.label-content {
+  width: 211px;
+  margin-left: 10px;
+  overflow: auto;
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+.drop-footer {
+  background-color: #ddd;
+  z-index: 1200;
+  padding: 6px;
+  height: 2.5rem;
+}
+
+.done {
+  color: #000;
+  top: -82%;
+  border-radius: 5px;
+  border: 0.3px solid #ddd;
+  background-color: #fff;
+  width: 57px;
+  font-weight: bold;
+}
+
+.done:hover {
+  background-color: #555;
+  border: 0.3px solid #555;
+}
