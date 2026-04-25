@@ -103,11 +103,9 @@ export class Header implements OnInit, OnDestroy {
 
       console.log('👤 Owner info initialized:', { ownerName: this.ownerName, ownerInitials: this.ownerInitials, isConnected: this.isConnected });
 
-      setTimeout(() => {
-        this.isCloseAllDropdown = false;
-        this.allDropdownClosed.emit();
-        this.cdr.detectChanges();
-      }, 0);
+      this.isCloseAllDropdown = false;
+      this.allDropdownClosed.emit();
+      this.cdr.detectChanges();
 
     } catch (error) {
       console.error('Erreur lors du chargement du user:', error);
@@ -174,15 +172,13 @@ export class Header implements OnInit, OnDestroy {
         console.log('📌 Chargement du premier board:', boardToLoad?.name);
       }
 
-      setTimeout(() => {
-        if (boardToLoad) {
-          this.activeIndex = boardToLoad.name;
-          this.message.messageAny(boardToLoad);
-          // Sauvegarder le board chargé
-          localStorage.setItem('lastViewedBoardId', boardToLoad.id!);
-        }
-        this.cdr.detectChanges();
-      }, 0);
+      if (boardToLoad) {
+        this.activeIndex = boardToLoad.name;
+        this.message.messageAny(boardToLoad);
+        // Sauvegarder le board chargé
+        localStorage.setItem('lastViewedBoardId', boardToLoad.id!);
+      }
+      this.cdr.detectChanges();
 
     } catch (error: any) {
       console.error('❌ Erreur lors du chargement des boards:', error);
@@ -190,10 +186,8 @@ export class Header implements OnInit, OnDestroy {
       // L'intercepteur gère automatiquement les 401 et le refresh
       // Si on arrive ici après un 401, c'est que le refresh a échoué
 
-      setTimeout(() => {
-        this.boards = [];
-        this.cdr.detectChanges();
-      }, 0);
+      this.boards = [];
+      this.cdr.detectChanges();
     }
   }
 
@@ -327,15 +321,11 @@ export class Header implements OnInit, OnDestroy {
 
         this.isConnected = isConnected;
 
-        // ✅ Si l'utilisateur vient de se connecter, charger les boards après un court délai
+        // ✅ Si l'utilisateur vient de se connecter, charger les boards
         if (isConnected && wasDisconnected) {
-          console.log('✅ Utilisateur connecté - Chargement des boards dans 500ms...');
-
-          // ⏱️ Délai de 500ms pour laisser le backend stabiliser la session
-          setTimeout(() => {
-            this.loadBoards();
-            this.initializeOwnerInfo();
-          }, 500);
+          console.log('✅ Utilisateur connecté - Chargement des boards...');
+          this.loadBoards();
+          this.initializeOwnerInfo();
         }
 
         this.cdr.detectChanges();
