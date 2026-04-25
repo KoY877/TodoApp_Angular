@@ -11,79 +11,72 @@ import { CommonModule } from '@angular/common';
   styleUrl: './sign-up.css',
 })
 export class SignUp {
- @Input() email: string = '';
+  @Input() email: string = '';
   @Input() password: string = '';
-  @Output() closeSignUp_OpenSignIn: EventEmitter<boolean> = new EventEmitter<boolean>();
-  @Output() isConnected: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() closeSignUp: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() openSignIn: EventEmitter<boolean> = new EventEmitter<boolean>();
 
-  isSignIn: boolean = true;
-  form: FormGroup
+  isSignUp: boolean = true;
+  form: FormGroup;
   errorMessage: string = '';
 
   constructor(
     private formbuilder : FormBuilder,
     private auth: AuthService,
-    private reloadService: Reload
+    private reload: Reload
   ) {
     this.form = formbuilder.group({
+      username: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(12)]]
     })
   }
 
+  // Method to handle form cancellation
+  handleCloseSignUp(){
+    this.isSignUp = false;
+    this.closeSignUp.emit(this.isSignUp);
+  }
+
+  // Method to handle redirecting to the sign-in form
+  handleSignUpRedirect(){
+    this.isSignUp = false;
+    this.closeSignUp.emit(this.isSignUp);
+    this.openSignIn.emit(true); // Open the sign-in form when redirecting from sign-up
+  }
+
   // Method to handle form submission
   async handleSignUpSubmit(event: any){
-    // Here you can add your sign-in logic, such as form validation and API calls
+    // Here you can add your sign-up logic, such as form validation and API calls
     event?.preventDefault()
     // Mark all form controls as touched to trigger validation messages
     this.form.markAllAsTouched()
 
-    // If the form is invalid, return early
-    if (this.form.invalid) {
-      return;
-    }
-
+    // If the form is invalid, you can return early or display validation errors
     try {
-      const userData = this.form.value;
-      const response = await lastValueFrom(this.auth.getUserByEmailAndPassword('user/validate', userData));
+      const userData = this.form.value
+      const response = await lastValueFrom(this.auth.addUser('auth/register', userData))
 
       if (response) {
-
-        // Parse la réponse JSON
-        const authData = JSON.parse(response);
-
-        // Stocker l'API Secret et l'User ID dans localStorage
-        localStorage.setItem('Api-Secret', authData.apiSecret);
-        localStorage.setItem('User-Id', authData.userId);
-        localStorage.setItem('userEmail', userData.email);
-        localStorage.setItem('isAuthenticated', 'true');
-        localStorage.setItem('connected', 'true');
-
-        // Rediriger vers le tableau de bord ou une autre page protégée
-        this.isConnected.emit(true);
-      } else {
-        this.errorMessage = 'Email ou mot de passe incorrect.';
+        this.handleCloseSignUp();
+        this.openSignIn.emit(true); // Open the sign-in form after successful sign-up
+        // this.reload.reloadPage() // Reload the page to update the UI after sign-up
       }
 
     } catch (error: any) {
-      if (error.status === 401) {
-        this.errorMessage = 'Email ou mot de passe incorrect.';
-      } else if (error.status === 400) {
-        this.errorMessage = 'Paramètres invalides.';
+      // Handle errors, such as displaying error messages to the user
+      if (error.status === 400) {
+        // Handle specific error cases, such as email already in use
+        if (error.error.message.includes('email')) {
+          this.errorMessage = 'This email address is already in use.';
+        } else if (error.error.message.includes('username')) {
+          this.errorMessage = 'This username is already in use.';
+        }
+
       } else {
-        this.errorMessage = 'Une erreur inattendue s\'est produite.';
-        console.error('Erreur de connexion:', error);
+        this.errorMessage = 'Email and password are required, and password must be at least 12 characters long.';
       }
     }
-
-    // Reload the page to update the state of the application
-    this.reloadService.reloadPage();
-  }
-
-  // Method to handle sign-up redirect
-  handleSignUpRedirect() {
-    this.isSignIn = false;
-    this.closeSignUp_OpenSignIn.emit(this.isSignIn);
   }
 
 }

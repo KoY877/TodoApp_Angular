@@ -1,6 +1,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-lg-12 col-md-12 flex align-items" >
+
             <div class="sign-in-container">
                 <h2>Sign In</h2>
                 <form [formGroup]="form" (ngSubmit)="handleSignInSubmit($event)">
@@ -12,6 +13,7 @@
                     <label for="password">Password:</label>
                     <input type="password" id="password" class="form-control" formControlName="password" name="password" required>
                   </div>
+                  <div class="error-message mb-3" *ngIf="errorMessage">{{ errorMessage }}</div>
                   <div class="flex justify-content-end gap-2">
                     <button type="submit" class="btn btn-primary">Sign In</button>
                     <button type="button" class="btn btn-secondary" (click)="handleSignUpRedirect()">Sign Up</button>

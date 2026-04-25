@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ModalCreateTodo } from './modal-create-todo';
+import { List } from './column';
 
-describe('ModalCreateTodo', () => {
-  let component: ModalCreateTodo;
-  let fixture: ComponentFixture<ModalCreateTodo>;
+describe('List', () => {
+  let component: List;
+  let fixture: ComponentFixture<List>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ModalCreateTodo]
+      imports: [List]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ModalCreateTodo);
+    fixture = TestBed.createComponent(List);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

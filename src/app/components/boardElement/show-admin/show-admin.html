@@ -1,1 +1,14 @@
-<p>show-admin works!</p>
+<!-- show-admin -->
+<div class=" flex">
+    <div class="icons-back-board">
+      <span class="fa user">{{ownerInitials}}</span>
+    </div>
+    <div class="flex">
+      <div class="textWidth">
+        <strong >{{ownerName}}</strong>
+        <div>Owner</div>
+        <button class="button previous mt-2">Filter on user</button>
+      </div>
+      <button type="button" class="btn-close " (click)="handleCloseDropdown()"></button>
+    </div>
+  </div>

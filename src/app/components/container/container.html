@@ -1,4 +1,9 @@
-<div class="container-fluid containerHeight" >
+<div class="container-fluid containerHeight"
+    [ngClass]="{
+      'container-board-open': openBoard && !openModalCreateBoard,
+      'container-modal-visible': openModalCreateBoard
+    }"
+    >
 
   <app-sign-in
     *ngIf="sign_in && !sign_up && !isConnected"
@@ -8,28 +13,23 @@
 
   <app-sign-up
     *ngIf="sign_up && !sign_in && !isConnected"
-    (closeSignUp_OpenSignIn)="handleOpenSignIn()"
+    (closeSignUp)="handleCloseSignUp($event)"
+    (openSignIn)="handleOpenSignIn()"
   ></app-sign-up>
 
   <app-modal-create-board
-    *ngIf="openModalCreateBoard && isConnected &&
-     !sign_in && !sign_up && !isCloseAllDropdown && !clickedBoard"
-      (closeModal)="handleCloseModal()"
-
+    *ngIf="openModalCreateBoard && isConnected && !sign_in && !sign_up"
+    (closeModal)="handleCloseModal()"
   ></app-modal-create-board>
-<!--
- Dans le if a mettre aprés:
- && !clickedBoard
-
-[modelData] = "modalData" -->
 
 
   <app-board
-    *ngIf="openBoard && isConnected && !openModalCreateBoard && !sign_in && !sign_up"
-
-  ></app-board>
-
-   <!-- [clickedBoard]="clickedBoard"
+    *ngIf="isConnected && openBoard"
+    [clickedBoard]="clickedBoard"
     [isCloseAllDropdown]="isCloseAllDropdown"
-    (allDropdownClosed)="handelClosedDropdown()" -->
+    (allDropdownClosed)="handleClosedDropdown()"
+    (sendTaskData)="handleBoardDeleted()">
+  </app-board>
+
+<!-- ...existing code... -->
 </div>

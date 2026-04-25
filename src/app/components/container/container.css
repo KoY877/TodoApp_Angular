@@ -1,0 +1,21 @@
+.container-fluid {
+
+  padding: 0px;
+  flex-grow: 1;
+  position: static;
+}
+
+.containerHeight {
+  position: static;
+  min-height: 85vh;
+}
+
+/* Position relative  */
+.container-fluid.container-board-open {
+  position: relative;
+}
+
+/* Position static */
+.container-fluid.container-modal-visible {
+  position: static;
+}

@@ -2,7 +2,8 @@ import { Column } from "./column.model";
 import { Members } from "./members.model";
 
 export class Board {
-   id?: string;
+    id?: string;
+    userId?: string;
     name: string = '';
     columns: Column[] = [];
     added_columns: Column[] = [];
@@ -11,8 +12,10 @@ export class Board {
     members: Members[] = [];
 
     //
-    constructor(id?: string, name: string = '', columns?: Column | Column[], selectedTask: string = '', globalOption: string = '', members?: Members | Members[]) {
+    constructor(id?: string, userId?: string, name: string = '', columns?: Column | Column[],
+       selectedTask: string = '', globalOption: string = '', members?: Members | Members[]) {
         this.id = id;
+        this.userId = userId;
         this.name = name;
         if (columns) {
             this.columns = Array.isArray(columns) ? columns : [columns];
@@ -23,4 +26,6 @@ export class Board {
             this.members = Array.isArray(members) ? members : [members];
         }
     }
+
+
 }

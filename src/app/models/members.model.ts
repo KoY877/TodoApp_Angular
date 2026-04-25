@@ -1,6 +1,7 @@
 export class Members {
+  id?: string;
   memberEmail?: string;
   role?: string;
-  name?: string;
-  isDropdown?: boolean;
+  memberOrder?: number;
+  boardId?: string;
 }

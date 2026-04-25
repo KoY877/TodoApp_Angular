@@ -1,1 +1,12 @@
-<p>alert works!</p>
+<div class="modal-product-view">
+    <div class="overlay"> </div>
+    <div class="modal-alert-container">
+        <p>You have started to add members, but not completed.</p>
+        <p>Do you want to discard your changes?</p>
+
+        <div class="modal-alert-button d-flex">
+            <button class="button-alert  cancel" (click)="handleCancel()">Cancel</button>
+            <button class="button-alert  discard" (click)="handleDiscard()">Discard</button>
+        </div>
+    </div>
+</div>

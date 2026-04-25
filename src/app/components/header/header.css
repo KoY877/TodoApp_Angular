@@ -6,8 +6,10 @@
     height: 45px;
     background-color: #444;
     padding: 0;
-    position: relative;
+    position: sticky;
+    top: 0;
     z-index: 1060;
+    width: 100%;
 }
 
 .row {
@@ -206,33 +208,24 @@ button:active {
     border-color: #2185d0;
 }
 
-/* ============================================
-   DROPDOWN
-   ============================================ */
-
 .dropdown-menu {
     z-index: 1050;
+    min-width: 250px;
+    max-width: 320px;
+    padding: 0;
+    margin-top: 4px;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.dropdown-item {
-    padding: 0.5rem 1rem 0.5rem 0.57rem;
-    transition: background-color 0.2s ease;
+/* Zone scrollable uniquement pour la liste des boards */
+.boards-list {
+    max-height: 200px;
+    overflow-y: auto;
 }
 
-.dropdown-item:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-}
-
-/* ============================================
-   LIST ITEMS
-   ============================================ */
-
-li {
-    border-bottom: 2px solid #cbcccc;
-}
-
-li:last-child {
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+.boards-list li {
+    list-style: none;
 }
 
 /* ============================================
@@ -245,4 +238,44 @@ li:last-child {
 
 .shadow {
     box-shadow: 5px 0 0 0 rgba(0, 0, 0, 0.5);
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal-profile {
+  background: white;
+  border-radius: 8px;
+  padding: 0;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.modal-profile .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #ddd;
+}
+
+.modal-profile .modal-body {
+  padding: 20px;
+}
+
+.modal-profile .modal-body label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 500;
 }

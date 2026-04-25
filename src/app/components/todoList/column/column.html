@@ -1,0 +1,55 @@
+<div class="container-fluid d-flex" id="column">
+    <div class="column" *ngFor="let col of filteredTasks;">
+        <div class="task-header d-flex justify-content-between align-items-center" >
+            <div class="task-list-name mx-auto">
+              {{col?.columnName}}
+              <span class="limit" *ngIf="col?.limitWorkInProgress !== null">
+                {{col?.tasks?.length ?? 0}}/{{col?.limitWorkInProgress}}
+              </span>
+            </div>
+            <div class="icon pe-2 ml-auto" (click)="handleAddTask(col?.id!)">
+              <fa-icon [icon]="faPlus" class="fa-plus"></fa-icon>
+            </div>
+        </div>
+        <div class="task-body"
+             cdkDropList
+             [cdkDropListData]="col.tasks || []"
+             [cdkDropListConnectedTo]="connectedDropLists"
+             [id]="'drop-list-' + column.indexOf(col)"
+             (cdkDropListDropped)="drop($event)"
+             >
+          <div class="task-card"
+               cdkDrag
+               *ngFor="let task of col?.tasks"
+               [style.background]="task?.colors?.[0] ? task.colors[0] : '#ffffe0'"
+               (click)="editTask(task)">
+            <div class="task-name">{{ task?.name }}</div>
+            <div class="task-description" *ngIf="task?.description" [innerHTML]="task.description | formatText"></div>
+            <div class="task-meta d-flex justify-content-between align-items-center" *ngIf="task?.time || task?.members?.length">
+              <span class="task-time" *ngIf="task?.time">{{ task.time }}h</span>
+              <div class="task-members d-flex" *ngIf="task?.members?.length">
+                <span class="task-member-icon" *ngFor="let m of task.members; let i = index" [style.color]="generateRandomColor(i)">
+                  {{ (m?.memberEmail || m) | character }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-create" *ngIf="isOpenTaskModal">
+  <app-add-task
+     *ngIf="isOpenTaskModal"
+    [isTaskOpen]="isOpenTaskModal"
+    [isEditTask]="isEditTask"
+    [taskToEdit]="selectedTask"
+    [currentBoard]="clikedBoard"
+    [columnId]="selectedColumnId"
+    (clickOutside)="handleCloseTaskModal()"
+    (closeTaskModal)="handleCloseTaskModal()"
+    (taskCreated)="handleTaskCreated($event)"
+    (taskUpdated)="handleTaskUpdated($event)">
+  ></app-add-task>
+</div>
+

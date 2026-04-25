@@ -198,8 +198,8 @@ export class ModalCreateBoard {
   }
 
   // Go to Step 1
- async handleNextStepPage_1(event?: Event){
-   event?.preventDefault()
+  async handleNextStepPage_1(event?: Event){
+    event?.preventDefault()
     this.isSubmitted = true;
 
     // Check the value name
@@ -212,7 +212,6 @@ export class ModalCreateBoard {
 
       // Verify if name exists in DB
       await this.verifyIfNameExistsInDB()
-      console.log("await");
 
     }
   }
@@ -220,7 +219,7 @@ export class ModalCreateBoard {
   // Verify if name exists in DB
   async verifyIfNameExistsInDB (){
     // Get all board data
-    let allBoadData = await lastValueFrom(this.entityService.getData("board"));
+    let allBoadData = await lastValueFrom(this.entityService.getData("boards/all"));
 
     // Filter name
     let name = allBoadData.filter((item: any) => item?.name === this.form.value.name)
@@ -235,7 +234,7 @@ export class ModalCreateBoard {
       this.cdr.detectChanges();
     } else {
       // Show alert
-      alert("Board name already exit !")
+      alert("Board name already exists !");
     }
   }
 
@@ -286,25 +285,28 @@ export class ModalCreateBoard {
     }
   }
 
-  // Go to step 1
-  handlePrevStep()
-  {
-    // Get submited columns data
-    this.submitColumns = this.form.value.columns;
+  // Go to step 1 (from Step 2)
+  handlePrevStep() {
+    // Restaurer les colonnes depuis added_columns
+    this.columns.clear();
 
-    //
-    this.submitColumns.forEach((item)  => {
+    // Source de données : priorité à added_columns, puis submitColumns en fallback
+    const columnsData = this.added_columns.length > 0
+      ? this.added_columns.value
+      : this.submitColumns;
 
-      // Delete array added_columns data
-      this.added_columns.clear()
+    if (columnsData && columnsData.length > 0) {
+      // Repeupler le FormArray columns
+      columnsData.forEach((item: any) => {
+        this.columns.push(this.formBuilder.group({
+          columnName: [item.columnName || '']
+        }));
+      });
+    }
 
-      if (item.columnName === "Done" ){
-        this.isDone = !this.isDone
-      }
-
-      this.isDoneDeleted = false
-
-    })
+    // Reset flags
+    this.isDone = false;
+    this.isDoneDeleted = false;
 
     // Previous step
     this.prevStep();
@@ -352,35 +354,31 @@ export class ModalCreateBoard {
   handleLimitProgress() {
     this.limitProgress = true;
 
+    // Sauvegarder les données AVANT de clear
     this.step3_columns = this.form.value.added_columns;
 
     // Remove the object "Done"
-    const value = this.step3_columns.find(item  => item.columnName === "Done")
+    const value = this.step3_columns.find(item => item.columnName === "Done")
     this.step3_columns = this.step3_columns.filter(item => item.columnName !== "Done")
 
-    // Push object "Done" at end, if it exist
-    if (value ) {
+    // Push object "Done" at end, if it exists
+    if (value) {
       this.step3_columns.push(value)
     }
 
-    //Delete column data
+    // Delete column data AVANT de repeupler
     this.columns.clear()
     this.added_columns.clear()
 
-    // Save Columns Data in the Array added_columns
-    this.step3_columns.forEach((item)  => {
-      if (item.columnName === "Done" ){
-        this.isDone = !this.isDone
+    // Repeupler avec les données sauvegardées (UN SEUL PUSH par item)
+    this.step3_columns.forEach((item) => {
+      if (item.columnName === "Done") {
+        this.isDone = true
       } else {
-        this.isDoneDeleted = !this.isDoneDeleted
+        this.isDoneDeleted = true
       }
 
-      // Push submited data in array columns and added_columns
-      this.added_columns.push(this.formBuilder.group({
-        columnName: [item.columnName],
-        limitWorkInProgress: [item.limitWorkInProgress]
-      }))
-      ,
+      // UN SEUL PUSH (pas de duplication)
       this.added_columns.push(this.formBuilder.group({
         columnName: [item.columnName],
         limitWorkInProgress: [item.limitWorkInProgress]
@@ -394,51 +392,42 @@ export class ModalCreateBoard {
   }
 
   // Add Columns
-  handleAddColumn(value : String){
+  handleAddColumn(value: String) {
     // Add column Done, if "Add a Done column for me" is checked
-    if(!value && (this.form.value.globalOption === 'Add a Done column for me')) {
+    if (!value && (this.form.value.globalOption === 'Add a Done column for me')) {
+      // UN SEUL PUSH avec le bon nom de propriété (columnName, pas value)
       this.added_columns.push(this.formBuilder.group({
-        value: ['Done'],
-        limitWorkInProgress: []
-      }))
-      ,
-      this.added_columns.push(this.formBuilder.group({
-        value: ['Done'],
+        columnName: ['Done'],
         limitWorkInProgress: []
       }))
     }
   }
 
   // Go to Step 1
-  handlePrevTaskStep()
-  {
-    // Get submited columns data
+  handlePrevTaskStep() {
+    // Sauvegarder les modifications actuelles de l'utilisateur
     this.step3_columns = this.form.value.added_columns;
 
-    // Delete array columns2 data
-    this.added_columns.clear()
-
-    this.step3_columns.forEach((item)  => {
-
-      if (item.columnName === "Done" ){
-        this.isDone = !this.isDone
-      }
-
-      this.isDoneDeleted = true
-
-    })
-
-    // Previous step
+    // Previous step (les données sont déjà dans step3_columns pour réutilisation)
     this.prevStep();
-
   }
 
-
-
   // Go to Step 2
-  handlePrevChoiceStep(){
+ // Go to Step 2 (from Step 3)
+  handlePrevChoiceStep() {
     this.limitProgress = false;
-    this.prevStep()
+
+    // Restaurer columns depuis step3_columns pour pouvoir revenir au Step 1
+    if (this.step3_columns && this.step3_columns.length > 0) {
+      this.columns.clear();
+      this.step3_columns.forEach((item: any) => {
+        this.columns.push(this.formBuilder.group({
+          columnName: [item.columnName || '']
+        }));
+      });
+    }
+
+    this.prevStep();
   }
 
   handleInviteMember0(){
@@ -500,52 +489,112 @@ export class ModalCreateBoard {
 
   // Submit data
   async handleSubmit(event: any){
-
     // Prevent default behavior
     event?.preventDefault()
     // Mark all form controls as touched to trigger validation messages
     this.form.markAllAsTouched()
 
-    // If the form is invalid, you can return early or display validation errors
-    try {
-      // Get userId from localStorage
-      const userId = localStorage.getItem('User-Id');
-
-      // Prepare board data with userId
-      const boardData = {
-        ...this.form.value,
-        userId: userId
-      };
-
-      const response = await lastValueFrom(this.entityService.addData('board', boardData))
-
-      if (response) {
-        console.log(response);
-
-      }
-
-    } catch (error: any) {
-      // Handle errors, such as displaying error messages to the user
-      if (error.status === 400) {
-        this.errorMessage = 'A board with this name already exists. Please choose a different name.';
-      } else if (error.message?.includes('API Secret') || error.message?.includes('User ID')) {
-        this.errorMessage = 'Authentication required. Please sign in again.';
-      } else {
-        this.errorMessage = 'An error occurred while creating the board. Please try again later.';
-      }
-
-      alert(this.errorMessage);
-      return; // Don't close modal or reload on error
-
-
+    // Validate form
+    if (!this.form.value.name || this.form.value.name.trim() === '') {
+      alert('Board name is required');
+      return;
     }
 
-    // Close dropdown
-    this.closeModal.emit()
-    this.message.messageOpenBoard(true)
-    this.reload.reloadPage();
-  }
+    try {
+      const boardData = {
+        name: this.form.value.name.trim(),
+        description: this.form.value.description || ''
+        // ✅ Pas de userId - extrait du JWT côté backend
+      };
 
+      console.log('📤 Creating board:', boardData);
+
+      // 1. Create the board
+      const response: any = await lastValueFrom(
+        this.entityService.addData('boards', boardData)
+      );
+
+      console.log('✅ Board created successfully:', response);
+      this.responsData = response;
+
+      const boardId: string = response.id;
+
+      // 2. Save KanbanColumns linked to the new board
+      const columnsToSave: any[] = this.form.value.added_columns ?? [];
+      for (const col of columnsToSave) {
+        if (col.columnName?.trim()) {
+          await lastValueFrom(
+            this.entityService.addData('board/kanban-column', {
+              columnName: col.columnName.trim(),
+              limitWorkInProgress: col.limitWorkInProgress ?? null,
+              boardId
+            })
+          );
+        }
+      }
+
+      // 3. Save Members linked to the new board
+      const membersToSave: any[] = this.form.value.members ?? [];
+      const failedMembers: string[] = [];
+      for (const m of membersToSave) {
+        if (m.memberEmail?.trim()) {
+          try {
+            await lastValueFrom(
+              this.entityService.addData('board/member', {
+                memberEmail: m.memberEmail.trim(),
+                role: m.role ?? 'Standard',
+                boardId
+              })
+            );
+          } catch (memberError: any) {
+            console.warn(`⚠️ Could not add member ${m.memberEmail}:`, memberError);
+            failedMembers.push(m.memberEmail.trim());
+          }
+        }
+      }
+
+      // Notify other components about the new board
+      this.message.messageAny(response);
+      this.message.messageOpenBoard(true);
+
+      // Close modal
+      this.closeModal.emit();
+
+      // Warn if some members could not be added (email not registered)
+      if (failedMembers.length > 0) {
+        alert(`Board created successfully!\n\nThe following email(s) could not be added as members (not registered):\n${failedMembers.join('\n')}`);
+      }
+
+      // Reload to show the new board
+      setTimeout(() => {
+        this.reload.reloadPage();
+      }, 300);
+
+    } catch (error: any) {
+      console.error('❌ Error creating board:', error);
+      
+      // Handle specific error cases
+      if (error.status === 401) {
+        this.errorMessage = 'Authentication required. Please sign in again.';
+      } else if (error.status === 400) {
+        this.errorMessage = error.error?.message || 'A board with this name already exists. Please choose a different name.';
+      } else if (error.status === 403) {
+        this.errorMessage = 'You do not have permission to create a board.';
+      } else if (error.status === 0) {
+        // Network error - board might have been created
+        console.warn('⚠️ Network error (status 0) - checking if board was created...');
+        this.closeModal.emit();
+        setTimeout(() => {
+          this.reload.reloadPage();
+        }, 500);
+        return;
+      } else {
+        this.errorMessage = error.error?.message || 'An error occurred while creating the board. Please try again.';
+      }
+      
+      alert(this.errorMessage);
+    }
+  }
    // Fermer le modal
   handleCloseModal() {
     this.closeModal.emit();

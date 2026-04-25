@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class Message {
-   private CloseAll = new BehaviorSubject<boolean>(false);
+  private CloseAll = new BehaviorSubject<boolean>(false);
   private OpenModal = new BehaviorSubject<boolean>(false);
   private OpenBoard = new BehaviorSubject<boolean>(false);
   private any = new BehaviorSubject<any>(null);
@@ -13,8 +13,14 @@ export class Message {
   private openTaskModal = new BehaviorSubject<any>(null);
   private signIn = new BehaviorSubject<boolean>(this.getInitialSignInState());
   private signUp = new BehaviorSubject<boolean>(this.getInitialSignUpState());
-  private connected = new BehaviorSubject<boolean>(this.getInitialConnectedState());
+  // ⚠️ Ne pas initialiser 'connected' avec localStorage - l'APP_INITIALIZER va le définir après vérification du token
+  private connected = new BehaviorSubject<boolean>(false);
   private disconnect = new BehaviorSubject<boolean>(false);
+  private openMembersDropdown = new BehaviorSubject<boolean>(false);
+  private sendMessage = new BehaviorSubject<any>(null);
+  private boardDeleted = new Subject<void>();
+  private profileUpdated = new Subject<{ username: string; email: string }>();
+
 
   boolCloseAll$ = this.CloseAll.asObservable();
   boolOpenModal$ = this.OpenModal.asObservable();
@@ -26,6 +32,11 @@ export class Message {
   connected$ = this.connected.asObservable();
   disconnect$ = this.disconnect.asObservable();
   openBoard$ = this.OpenBoard.asObservable();
+  openMembersDropdown$ = this.openMembersDropdown.asObservable();
+  sendMessage$ = this.sendMessage.asObservable();
+  boardDeleted$ = this.boardDeleted.asObservable();
+  profileUpdated$ = this.profileUpdated.asObservable();
+
 
   constructor() { }
 
@@ -82,5 +93,21 @@ export class Message {
 
   messageOpenBoard(message: boolean) {
     this.OpenBoard.next(message);
+  }
+
+  messageOpenMembersDropdown(message: boolean) {
+    this.openMembersDropdown.next(message);
+  }
+
+  messageSendMessage(message: any) {
+    this.sendMessage.next(message);
+  }
+
+  messageBoardDeleted(): void {
+    this.boardDeleted.next();
+  }
+
+  messageProfileUpdated(data: { username: string; email: string }): void {
+    this.profileUpdated.next(data);
   }
 }

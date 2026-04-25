@@ -1,31 +1,45 @@
 import { ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, Input, Output } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { lastValueFrom, Subject, takeUntil } from 'rxjs';
+import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { lastValueFrom, Subject} from 'rxjs';
 import { Board as BoardModel } from '../../../models/board.model';
-import { Router } from '@angular/router';
 import { EntityService } from '../../../services/entity-service';
 import { Reload } from '../../../services/reload';
+import { CommonModule } from '@angular/common';
+import { CharacterPipe } from '../../../pipes/character-pipe';
+import { faArrowLeft, faQuestion } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { Members } from '../../../models/members.model';
+import { MemberService } from '../../../services/member-service';
 
 @Component({
   selector: 'app-invite-member',
-  imports: [],
+  imports: [CommonModule, ReactiveFormsModule, CharacterPipe, FontAwesomeModule],
   templateUrl: './invite-member.html',
   styleUrl: './invite-member.css',
 })
 export class InviteMember {
+  // Fontawesome icon
+  readonly faQuestion = faQuestion;
+  readonly faArrowLeft = faArrowLeft;
+
+  // Input and Output for send data and event on the board component
   @Input() getBoardId?: any
   @Output() closeInviteModal: EventEmitter<void> = new EventEmitter<void>();
   @Output() clickOutside = new EventEmitter<any>();
   @Output() clickOutside2 = new EventEmitter<any>();
+  @Output() isCompleteEmailChange = new EventEmitter<any>();
   private destroy$ = new Subject<void>();
 
+  boardId = '';
+  ownerName = '';
+  ownerInitials = '';
   currentStep:number = 1;
   color?: string | null = '#'
   selectedIndex: number | null = null;
   selectedRole: string = 'Standard';
   data?: Array<any>[]
   alertMessage: string = '';
-  receiveMemberColumnsData?: Array<any>[]
+  receiveMembersData?: Array<any>[]
   notDuplicateMemberData?:  Array<{ memberEmail: string; role: string }> = [];
   boardData?: any
   isCompleteEmail: boolean = false
@@ -34,63 +48,39 @@ export class InviteMember {
   dropdownValue: boolean = false
   emailValue: string = ""
   form: FormGroup;
+  memberColors: string[] = [];
+  newMembers: Members[] = [];
 
   constructor (
     private formBuilder: FormBuilder,
-    private router : Router,
     private entityService : EntityService,
+    private memberService: MemberService,
     private detectChange : ChangeDetectorRef,
     private elementRef: ElementRef,
     private reloadPage: Reload
   ) {
     this.form = this.formBuilder.group({
-      step1: this.formBuilder.group({
-        name: ['', Validators.required]
-      }),
-      step2: this.formBuilder.group({
-        columns: this.formBuilder.array([]), // Row management in table form
-      }),
-      step3: this.formBuilder.group({
-        columns2: this.formBuilder.array([]),
-        selectedTask: [''],
-        globalOption: ['']
-      }),
-      step4: this.formBuilder.group({
-        email:  ['', Validators.email],
-        memberColumns: this.formBuilder.array([]),
-        chooseRole: ['Standard']
-      }),
+      email: ['', Validators.email],
+      members: formBuilder.array([]),
+      chooseRole: ['Standard']
     })
   }
 
-
   ngOnInit(): void {
-
-    // If email value change
-    this.email.valueChanges.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (value) => {
-
-        if (value) {
-          this.isCompleteEmail = true
-          // Regex to valid email addresse
-          const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-          if (emailRegex.test(value)){
-            this.isShowEmail = !this.isShowEmail
-            this.emailValue = value
-
-          } else {
-            this.isShowEmail = false
-          }
-
-          this.isValueChange = true
-        } else {
-          this.isCompleteEmail = false
-          this.isValueChange = false
-        }
-        this.detectChange.detectChanges()
+    this.email.valueChanges.subscribe((value: string) => {
+      if (value && value.trim() !== '') {
+        this.isCompleteEmail = true;
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        this.isShowEmail = emailRegex.test(value);
+        this.emailValue = value;
+      } else {
+        this.isCompleteEmail = false;
+        this.isShowEmail = false;
+        this.emailValue = '';
       }
     });
 
+    this.memberColors = this.members.controls.map(() => this.getRandomColor());
   }
 
   ngOnDestroy(): void {
@@ -104,21 +94,14 @@ export class InviteMember {
     if (!this.elementRef.nativeElement.contains(event.target)) {
 
       // If  email value in Invite members change
-
-      if (this.isValueChange === true){
+      if (this.isValueChange === false && this.isCompleteEmail === false) {
         this.clickOutside.emit(this.isValueChange);
         this.email.reset()
         this.dropdownValue = false
-      } else {
+      } else  {
 
-        // If invite dropdown menu is open
-        if (this.dropdownValue === false ) {
-          this.clickOutside2.emit(this.dropdownValue = true);
-        } else {
-          this.clickOutside2.emit(this.dropdownValue = false);
-        }
+        this.isCompleteEmailChange.emit(true);
       }
-
     }
   }
 
@@ -127,78 +110,81 @@ export class InviteMember {
     this.closeInviteModal.emit()
   }
 
-
-  get email(): FormArray{
-    return this.form.get('step4.email') as FormArray;
+  get email(): FormControl {
+    return this.form.get('email') as FormControl;
   }
 
-  get memberColumns(): FormArray{
-    return this.form.get('step4.memberColumns') as FormArray;
+  get members(): FormArray {
+    return this.form.get('members') as FormArray;
   }
 
-  get role2(): FormArray{
-    return this.form.get('step4.role2') as FormArray;
+  get chooseRole(): FormControl {
+    return this.form.get('chooseRole') as FormControl;
   }
+
 
   // Add an email to the list
   async addEmail(event: any, id: string) {
-    event.preventDefault()
+    event.preventDefault();
 
-      // Receive email value
-      const emailValue = this.form.value.step4.email;
+    const emailValue: string = this.email.value?.trim();
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-      // Regex to valid email addresse
-      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (emailValue && emailRegex.test(emailValue)) {
+      // Get current board data
+      const currentBoard = await lastValueFrom(
+        this.entityService.getDataById<BoardModel>('boards', id)
+      );
 
-      if(emailValue && emailRegex.test(emailValue))
-      {
-        // Get current board data
-        const currentBoard = await lastValueFrom(this.entityService.getDataById<BoardModel>('board', id));
-
-        if(currentBoard[0].members.length === 0)
-        {
-          // Add email in memberColumns array
-          this.memberColumns.push(this.formBuilder.group({
-            memberEmail: [emailValue],
-            role: ['Standard']
-          }));
-
-        } else {
-
-          // Search email
-          const searchEmail = (currentBoard as BoardModel[])[0].members.filter((item:any) => item.memberEmail === emailValue)
-
-          // Alert, if email is already exist
-          if (searchEmail.length !== 0)
-          {
-            this.alertMessage = `${emailValue} is already a member of the board`;
-            alert( this.alertMessage)
-          } else {
-            // Add email in memberColumns array
-            this.memberColumns.push(this.formBuilder.group({
-              memberEmail: [emailValue],
-              role: ['Standard']
-            }))
-
-          }
-
-        }
-
-        // Update board data
-        this.email.reset()
-
-        this.isCompleteEmail = false
-
-        this.detectChange.detectChanges()
-      } else {
-        alert('Please enter a correct email address')
+      if (!currentBoard || !currentBoard[0]) {
+        alert('Board not found');
+        return;
       }
+
+      // Check if email already exists in board
+      const emailExists = currentBoard[0].members?.some(
+        (m: Members) => m.memberEmail?.toLowerCase() === emailValue.toLowerCase()
+      );
+
+      if (emailExists) {
+        alert('This member is already part of the board');
+        this.email.reset();
+        return;
+      }
+
+      // Check if email already in the form
+      const alreadyAdded = this.members.controls.some(
+        (control) => control.get('memberEmail')?.value.toLowerCase() === emailValue.toLowerCase()
+      );
+
+      if (alreadyAdded) {
+        alert('This email is already in the list');
+        this.email.reset();
+        return;
+      }
+
+      // Add email to members array
+      this.members.push(this.formBuilder.group({
+        memberEmail: [emailValue],
+        role: ['Standard'],
+        boardId: [this.boardId]
+      })),
+      this.email.reset()
+
+      // Reset email input
+      this.email.reset();
+      this.isCompleteEmail = false;
+      this.isShowEmail = false;
+    } else {
+      alert('Please enter a valid email address');
+    }
   }
 
   // Remove an email from the list
   removeEmail(event: any, index: number) {
     event.stopPropagation();
-    this.memberColumns.removeAt(index);
+    event.preventDefault();
+    this.members.removeAt(index);
   }
 
   // Next Formular
@@ -211,139 +197,44 @@ export class InviteMember {
   async nextStep(event: any, id: string) {
     event.preventDefault();
 
-    const emailValue: string | null = this.form.value.step4.email;
-    let memberValue = this.form.value.step4.memberColumns;
-    // Get current board data
-    const currentBoard = await lastValueFrom(this.entityService.getDataById('board', id));
+    try {
+      const emailValue: string | null = this.email.value?.trim();
 
-    // Regex to valid email addresse
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      // Regex to valid email address
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-    if (currentBoard[0] === undefined){
-      alert("Please create a board!")
-    }
-
-    if (memberValue.length !== 0 && emailValue === null ) {
-
-      // remove duplicate member data
-      this.removeDuplicateData()
-
-      // Move to next formular
-      this.moveToNextStep()
-    }
-
-    if (memberValue.length == 0 && emailValue !== null ) {
-      if (emailRegex.test(emailValue)) {
-        const typedBoard = currentBoard as BoardModel[];
-        if(typedBoard[0].members.length === 0)
-        {
-          // Add email in memberColumns array
-          this.memberColumns.push(this.formBuilder.group({
-            memberEmail: [emailValue],
-            role: ['Standard']
-          }));
-
-          // Move to next formular
-          this.moveToNextStep()
-        } else {
-
-          // Search email
-          const searchEmail = (currentBoard as BoardModel[])[0].members.filter((item:any) => item.memberEmail === emailValue)
-
-          // Alert, if email is already exist
-          if (searchEmail.length !== 0)
-          {
-            this.alertMessage = `${emailValue} is already a member of the board`;
-            alert( this.alertMessage)
-
-            if(this.currentStep == 1){
-              this.currentStep = 1;
-            }
-
-          } else {
-            // Add email in memberColumns array
-            this.memberColumns.push(this.formBuilder.group({
-              memberEmail: [emailValue],
-              role: ['Standard']
-            }))
-
-            // Move to next formular
-            this.moveToNextStep()
-          }
-        }
-
-      } else {
-        alert('Please enter a correct email address')
-      }
-
-    }
-
-    if (memberValue.length !== 0 && emailValue !== null){
-
+      // If there's an email in the input, add it first
       if (emailValue && emailRegex.test(emailValue)) {
+        await this.addEmail(event, id);
 
-        // Get current board data
-        const currentBoard = await lastValueFrom(this.entityService.getDataById<BoardModel>('board', id));
-
-        if(currentBoard[0].members.length === 0)
-        {
-          // Add email in memberColumns array
-          this.memberColumns.push(this.formBuilder.group({
-            memberEmail: [emailValue],
-            role: ['Standard']
-          }));
-
-          // remove duplicate member data
-          this.removeDuplicateData()
-
-          // Move to next formular
-          this.moveToNextStep()
-
-        } else {
-
-          // Search email
-          const searchEmail = (currentBoard as BoardModel[])[0].members.filter((item:any) => item.memberEmail === emailValue)
-
-          // Alert, if email is already exist
-          if (searchEmail.length !== 0)
-          {
-            this.alertMessage = `${emailValue} is already a member of the board`;
-            alert( this.alertMessage)
-
-            // Don´t move to the next formular
-            if(this.currentStep === 1){
-              this.currentStep = this.currentStep;
-            }
-          } else {
-            // Add email in memberColumns array
-            this.memberColumns.push(this.formBuilder.group({
-              memberEmail: [emailValue],
-              role: ['Standard']
-            }))
-
-            // remove duplicate member data
-            this.removeDuplicateData()
-
-            // Move to next formular
-            this.moveToNextStep()
-          }
-        }
-
-      } else {
-        alert('Please enter a correct email address')
+        // Wait a bit for the form to update
+        await new Promise(resolve => setTimeout(resolve, 100));
       }
 
-    }
+      // Check if there are members to invite AFTER adding the email
+      if (this.members.length === 0) {
+        alert('Please add at least one email address');
+        return;
+      }
 
-    this.email.reset();
+      // Remove duplicates
+      this.removeDuplicateData();
+
+      // Move to next step
+      this.currentStep = 2;
+      this.detectChange.detectChanges();
+
+    } catch (error) {
+
+      alert('An error occurred. Please try again.');
+    }
   }
 
-
- // remove duplicate member data
+  // remove duplicate member data
   removeDuplicateData() {
-    this.receiveMemberColumnsData = this.memberColumns.value
+    this.receiveMembersData = this.members.value
 
-    this.receiveMemberColumnsData?.forEach((item:any) => {
+    this.receiveMembersData?.forEach((item:any) => {
 
       const isDuplicate = this.notDuplicateMemberData?.some( // search duplicate member data
         (memberItem) =>
@@ -355,11 +246,11 @@ export class InviteMember {
       }
     })
 
-    this.memberColumns.clear()
+    this.members.clear()
 
-    // Push not duplicate member data into formArray memberColumns
+    // Push not duplicate member data into formArray members
     this.notDuplicateMemberData?.forEach((item:any) => {
-      this.memberColumns.push(this.formBuilder.group({
+      this.members.push(this.formBuilder.group({
         memberEmail: [item.memberEmail],
         role: [item.role]
       }))
@@ -396,41 +287,86 @@ export class InviteMember {
     this.selectedIndex = index;
   }
 
-
-  async handleInviteMember(event: any, id: string){
+  async handleInviteMember(event: any, id: string) {
     event.preventDefault();
 
-    // Get selected Role
-    let choosedRole = this.form.value.step4.chooseRole;
-
-    // Update of form memberColums data
-    this.memberColumns?.controls.forEach((control) =>{
-      const currentRole = control.get('role')?.value;
-
-      if (currentRole) {
-        control.get('role')?.setValue(choosedRole);
+    try {
+      if (!this.members?.length) {
+        alert('Please add at least one member to invite');
+        return;
       }
 
-    })
+      if (!id) {
+        alert('Board ID is missing');
+        return;
+      }
 
-    this.data = this.memberColumns?.value
-
-    // Get current board data
-    const currentBoard = await lastValueFrom(this.entityService.getDataById<BoardModel>('board', id));
-
-    this.data?.forEach((item: any) => {
-      currentBoard[0].members.push({
-        memberEmail: item.memberEmail,
-        role: item.role
+      const choosedRole = this.chooseRole.value;
+      this.members.controls.forEach((control) => {
+        control.get('role')?.setValue(choosedRole);
       });
-    })
 
-    const updateBoard = await lastValueFrom(this.entityService.updateData('board', currentBoard));
+      // Receive existing members for this board to check if email already exist for this user on this board
+      const existingMembers = await lastValueFrom(
+        this.memberService.getMembersByBoard<Members>(
+          'board/member',
+          id
+        )
+      );
 
-    // Close dropdown
-    this.closeInviteModal.emit()
+      const existingEmailsForUser = new Set(
+        existingMembers
+          .map(m => m.memberEmail?.toLowerCase())
+          .filter((e): e is string => !!e)
+      );
 
-    // Refresh component
-    this.reloadPage.reloadPage()
+      const memberData: Members[] = this.members.value;
+      this.newMembers = [];
+      let addedCount = 0;
+
+      // Add only new members that are not already part of the board for this user
+      memberData.forEach((item: Members) => {
+        const email = item.memberEmail?.toLowerCase();
+        if (email && !existingEmailsForUser.has(email)) {
+          this.newMembers.push({
+            memberEmail: item.memberEmail,
+            role: item.role || 'Standard',
+            boardId: id
+          });
+          addedCount++;
+        }
+      });
+
+      if (addedCount === 0 || this.newMembers.length === 0) {
+        alert('All members are already part of this board for this user');
+        return;
+      }
+
+      // Add new members to the Member table
+      for (const member of this.newMembers) {
+        await lastValueFrom(
+          this.memberService.addMemberData('board/member', member)
+        );
+      }
+
+      // Reset form
+      setTimeout(() => {
+        this.members.clear();
+        this.notDuplicateMemberData = [];
+        this.currentStep = 1;
+        this.form.reset({ chooseRole: 'Standard' });
+        this.closeInviteModal.emit();
+        this.reloadPage.reloadPage();
+      }, 0);
+
+    } catch (error: any) {
+
+      if (error?.status === 0) {
+        alert('Cannot connect to the server. Please check if the Server is running.');
+      } else {
+        alert(`An error occurred while inviting members: ${error?.message || 'Unknown error'}. Please check the console for details.`);
+      }
+    }
   }
+
 }
