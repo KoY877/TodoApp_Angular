@@ -8,9 +8,9 @@ import { faPlus} from '@fortawesome/free-solid-svg-icons';
 import { FaIconComponent } from "@fortawesome/angular-fontawesome";
 import { EntityService } from '../../../services/entity-service';
 import { CharacterPipe } from '../../../pipes/character-pipe';
-import { FormatTextPipe } from '../../../pipes/format-text-pipe';
 import { forkJoin, of } from 'rxjs';
 import { CdkDragDrop, CdkDrag, CdkDropList, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { FormatTextPipe } from '../../../pipes/format-text-pipe';
 
 @Component({
   selector: 'app-column',

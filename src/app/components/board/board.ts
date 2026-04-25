@@ -3,7 +3,6 @@ import { ShowAdmin } from "../boardElement/show-admin/show-admin";
 import { ShowMember } from "../boardElement/show-member/show-member";
 import { SearchMember } from "../boardElement/search-member/search-member";
 import { InviteMember } from "../boardElement/invite-member/invite-member";
-import { Alert } from "../boardElement/alert/alert";
 import { Members } from '../../models/members.model';
 import { EntityService } from '../../services/entity-service';
 import { lastValueFrom, Subject, takeUntil } from 'rxjs';
@@ -14,8 +13,9 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faPlus, faFilter, faPencil, faBars } from '@fortawesome/free-solid-svg-icons';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
 import { Message } from '../../services/message';
-import { List } from "../todoList/column/column";
 import { FormsModule } from '@angular/forms';
+import { Alert } from '../boardElement/alert/alert';
+import { List } from '../todoList/column/column';
 
 interface DropdownState {
   readonly name: string;
