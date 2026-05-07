@@ -32,20 +32,24 @@ export class SignUp {
     })
   }
 
-  // Method to handle form cancellation
+  /** Close the sign-up panel by emitting false */
   handleCloseSignUp(){
     this.isSignUp = false;
     this.closeSignUp.emit(this.isSignUp);
   }
 
-  // Method to handle redirecting to the sign-in form
+  /** Close the sign-up panel and redirect the user to the sign-in panel */
   handleSignUpRedirect(){
     this.isSignUp = false;
     this.closeSignUp.emit(this.isSignUp);
     this.openSignIn.emit(true); // Open the sign-in form when redirecting from sign-up
   }
 
-  // Method to handle form submission
+  /**
+   * Handle registration form submission.
+   * On success: closes sign-up and opens the sign-in panel.
+   * On failure: displays a user-friendly error message.
+   */
   async handleSignUpSubmit(event: any){
     // Here you can add your sign-up logic, such as form validation and API calls
     event?.preventDefault()

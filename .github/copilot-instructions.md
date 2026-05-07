@@ -13,6 +13,7 @@ Backend : Spring Boot (JWT, cookies httpOnly, refresh token).
 - Préciser le nom du fichier à modifier.
 - Ne jamais modifier un fichier non concerné par le bug actuel.
 - Avant de toucher un **élément protégé**, afficher un avertissement explicite et demander confirmation.
+- **Ne jamais utiliser d'emojis ou d'icônes** dans les commentaires de code (`/** */`, `//`) ni dans les messages générés. Les commentaires doivent être du texte brut uniquement.
 
 ---
 

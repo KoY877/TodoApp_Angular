@@ -16,7 +16,7 @@ export class MemberService {
     private readonly tokenService: TokenService
   ) {}
 
-  // ✅ Vérifier l'authentification (l'intercepteur ajoutera le header automatiquement)
+  // Verify authentication (the interceptor will add the header automatically)
   private ensureAuthenticated(): void {
     if (!this.tokenService.isAuthenticated() || !this.tokenService.getUserId()) {
       throw new Error('User not authenticated. Please sign in.');
@@ -26,7 +26,7 @@ export class MemberService {
   getMembersByBoard<T extends { boardId?: string }>(entity: string, boardId?: string): Observable<T[]> {
     this.ensureAuthenticated();
 
-    // ✅ L'intercepteur ajoutera automatiquement Authorization header
+    // The interceptor will automatically add the Authorization header
     return this.http.get<T[]>(`${this.apiUrl}/${entity}`).pipe(
       map(items =>
       Array.isArray(items) ? items.filter(item => item.boardId === boardId) : []
@@ -37,7 +37,7 @@ export class MemberService {
  addMemberData(entity: string, data: Members): Observable<Members> {
     this.ensureAuthenticated();
 
-    // ✅ L'intercepteur ajoutera automatiquement Authorization header
+    // The interceptor will automatically add the Authorization header
     return this.http.post<Members>(`${this.apiUrl}/${entity}`, data);
   }
 
@@ -45,7 +45,7 @@ export class MemberService {
   updateMemberData<T extends {id?: string}>(entity: string, data: T): Observable<T> {
     this.ensureAuthenticated();
 
-    // ✅ L'intercepteur ajoutera automatiquement Authorization header
+    // The interceptor will automatically add the Authorization header
     return this.http.patch<T>(
       `${this.apiUrl}/${entity}/${data.id}`,
       data
@@ -55,7 +55,7 @@ export class MemberService {
   delete<T extends {id?: string}>(entity: string, data: T): Observable<T> {
     this.ensureAuthenticated();
 
-    // ✅ L'intercepteur ajoutera automatiquement Authorization header
+    // The interceptor will automatically add the Authorization header
     return this.http.delete<T>(
       `${this.apiUrl}/${entity}/${data.id}`
     );
@@ -65,14 +65,14 @@ export class MemberService {
   getMemberData<T>(entity: string): Observable<T[]> {
     this.ensureAuthenticated();
 
-    // ✅ L'intercepteur ajoutera automatiquement Authorization header
+    // The interceptor will automatically add the Authorization header
     return this.http.get<T[]>(`${this.apiUrl}/${entity}`);
   }
 
   searchMemberData<T extends { step1: { name: string } }>(entity: string, query: string): Observable<T[]> {
     this.ensureAuthenticated();
 
-    // ✅ L'intercepteur ajoutera automatiquement Authorization header
+    // The interceptor will automatically add the Authorization header
     return this.http.get<T[]>(`${this.apiUrl}/${entity}`).pipe(
       map(items => {
         if (!Array.isArray(items)) return [];
@@ -85,7 +85,7 @@ export class MemberService {
   searchDataEmail<T extends { memberEmail: string }>(entity: string, query: string): Observable<T[]> {
     this.ensureAuthenticated();
 
-    // ✅ L'intercepteur ajoutera automatiquement Authorization header
+    // The interceptor will automatically add the Authorization header
     return this.http.get<T[]>(`${this.apiUrl}/${entity}`).pipe(
       map(items => {
         if (!Array.isArray(items)) return [];

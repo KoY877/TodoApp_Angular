@@ -1,52 +1,82 @@
-# TodoAppAngular
+# TodoApp Angular — Kanban Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.2.
+Angular 21 frontend for a fullstack Kanban board application.
+Connects to a Spring Boot backend running on `http://localhost:8081`.
 
-## Development server
+---
 
-To start a local development server, run:
+## Features
+
+* Kanban board UI (columns + draggable tasks)
+* JWT authentication (login / register / auto-refresh)
+* Access token stored in memory (not localStorage)
+* Refresh token managed via httpOnly cookie (handled by the backend)
+* Route guards for protected pages
+* Environment-based API URL configuration
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+* Node.js 20+
+* Angular CLI 21
+
+### Install dependencies
+
+```bash
+npm install
+```
+
+### Development server
 
 ```bash
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Navigate to `http://localhost:4200/`. The app will reload automatically on file changes.
 
-## Code scaffolding
+### Backend connection
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+The app expects the Spring Boot API at `http://localhost:8081`.
+To change the URL, edit the environment files:
 
-```bash
-ng generate component component-name
-```
+* `src/app/environements/environement.dev.ts` — development
+* `src/app/environements/environement.prod.ts` — production
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+---
 
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+## Build
 
 ```bash
 ng build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Output is placed in the `dist/` directory.
+
+---
 
 ## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
 
 ```bash
 ng test
 ```
 
-## Running end-to-end tests
+---
 
-For end-to-end (e2e) testing, run:
+## Angular CLI reference
+
+This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.2.
+
+### Code scaffolding
+
+```bash
+ng generate component component-name
+ng generate --help
+```
+
+### Running end-to-end tests
 
 ```bash
 ng e2e

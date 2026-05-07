@@ -66,7 +66,7 @@ export class Header implements OnInit, OnDestroy {
   ) { }
 
 
-  // Lifecycle hook to initialize the component
+  /** Lifecycle hook to initialize subscriptions and listen for board deletions */
   ngOnInit(): void {
     this.setupSubscriptions();
 
@@ -75,21 +75,25 @@ export class Header implements OnInit, OnDestroy {
     });
   }
 
+  /** Lifecycle hook to clean up all active subscriptions */
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
 
-  // Initialiser les informations du propriétaire
+  /**
+   * Resolve and display the current user's name and initials.
+   * Uses TokenService as primary source with localStorage as fallback.
+   */
   private async initializeOwnerInfo(): Promise<void> {
     try {
-      // ✅ Utiliser TokenService au lieu de localStorage
+      // Use TokenService instead of localStorage
       const currentUserId = this.tokenService.getUserId();
       const userData = this.tokenService.getUserData();
 
       if (!currentUserId) {
-        console.warn('⚠️ Aucun User-Id trouvé - Tentative de récupération depuis localStorage');
-        // ❌ NE PAS forcer isConnected = false ici!
+        console.warn('No User-Id found - attempting fallback to localStorage');
+        // Do not force isConnected = false here
         // La valeur de isConnected est gérée par le service Message
         // On essaie quand même de récupérer les infos depuis localStorage
       }
@@ -101,7 +105,7 @@ export class Header implements OnInit, OnDestroy {
       this.ownerName = username || email || 'Owner';
       this.ownerInitials = this.ownerName.substring(0, 2).toUpperCase();
 
-      console.log('👤 Owner info initialized:', { ownerName: this.ownerName, ownerInitials: this.ownerInitials, isConnected: this.isConnected });
+      console.log('Owner info initialized:', { ownerName: this.ownerName, ownerInitials: this.ownerInitials, isConnected: this.isConnected });
 
       this.isCloseAllDropdown = false;
       this.allDropdownClosed.emit();
@@ -117,20 +121,25 @@ export class Header implements OnInit, OnDestroy {
     }
   }
 
-  // Event handlers
+  /** Emit a request to open the board creation modal */
   onCreateBoard(): void {
     this.activeIndex = null;
     this.openModalCreateBoard = true;
     this.isDropdownOpenBoards = false;
 
-    // ✅ Émettre le message pour ouvrir le modal dans le Container
+    // Emit message to open the modal in the Container
     this.message.messageBooleanOpenModal(true);
 
-    console.log('📤 Header: Émission messageBooleanOpenModal(true)');
+    console.log('Header: messageBooleanOpenModal(true) emitted');
   }
 
+  /**
+   * Load all boards for the authenticated user.
+   * Creates a default board automatically when none exist.
+   * @param defaultIndex - index of the board to activate by default
+   */
   private async loadBoards(defaultIndex: number = 0): Promise<void> {
-    // ✅ Vérification avec TokenService
+    // Verify with TokenService
     const isAuthenticated = this.tokenService.isAuthenticated();
 
     if (!isAuthenticated) {
@@ -147,11 +156,11 @@ export class Header implements OnInit, OnDestroy {
       // S'assurer que c'est un tableau
       this.boards = Array.isArray(boardsData) ? boardsData : [boardsData];
 
-      console.log('📊 Boards chargés:', this.boards);
+      console.log('Boards loaded:', this.boards);
 
       // Si aucun board n'existe, créer un board par défaut
       if (this.boards.length === 0) {
-        console.log('📝 Aucun board trouvé - Création du board par défaut...');
+        console.log('No boards found - creating default board...');
         await this.createDefaultBoard();
         return; // createDefaultBoard va recharger les boards
       }
@@ -163,13 +172,13 @@ export class Header implements OnInit, OnDestroy {
       if (savedBoardId) {
         // Chercher le board sauvegardé
         boardToLoad = this.boards.find(b => b.id === savedBoardId);
-        console.log('🔍 Board sauvegardé trouvé:', boardToLoad?.name);
+        console.log('Saved board found:', boardToLoad?.name);
       }
 
       // Si pas de board sauvegardé ou board introuvable, utiliser le premier
       if (!boardToLoad) {
         boardToLoad = this.boards[defaultIndex];
-        console.log('📌 Chargement du premier board:', boardToLoad?.name);
+        console.log('Loading first board:', boardToLoad?.name);
       }
 
       if (boardToLoad) {
@@ -181,7 +190,7 @@ export class Header implements OnInit, OnDestroy {
       this.cdr.detectChanges();
 
     } catch (error: any) {
-      console.error('❌ Erreur lors du chargement des boards:', error);
+      console.error('Error loading boards:', error);
 
       // L'intercepteur gère automatiquement les 401 et le refresh
       // Si on arrive ici après un 401, c'est que le refresh a échoué
@@ -191,7 +200,12 @@ export class Header implements OnInit, OnDestroy {
     }
   }
 
-  // Handle board selection and open the corresponding board
+  /**
+   * Load a specific board by ID and notify the rest of the app via Message
+   * @param boardId - the board's UUID
+   * @param name - the board name (sets the active nav tab)
+   * @param clickEvent - optional click event to stop propagation
+   */
   async handleOpenBoard(
     boardId: string,
     name?: string,
@@ -216,18 +230,18 @@ export class Header implements OnInit, OnDestroy {
 
       if (clickedBoard && (clickedBoard as Board).id) {
         this.message.messageAny(clickedBoard);
-        // ✅ Sauvegarder le board sélectionné dans localStorage
+        // Save the selected board in localStorage
         const board = clickedBoard as Board;
         localStorage.setItem('lastViewedBoardId', board.id!);
-        console.log('💾 Board sauvegardé:', board.name || board.id);
+        console.log('Board saved:', board.name || board.id);
       }
     } catch (error) {
-      console.error('❌ Erreur lors du chargement du board:', error);
+      console.error('Error loading board:', error);
     }
   }
 
 
-  //Handle Sign In
+  /** Open the sign-in panel and close the sign-up panel */
   handleSignIn(): void {
     this.sign_in = true;
     this.sign_up = false;
@@ -235,7 +249,7 @@ export class Header implements OnInit, OnDestroy {
     this.message.messageSignUp(this.sign_up);
   }
 
-  // Handle user registration
+  /** Open the sign-up panel and close the sign-in panel */
   handleSignUp(): void {
     this.sign_up = true;
     this.sign_in = false;
@@ -255,10 +269,13 @@ export class Header implements OnInit, OnDestroy {
     });
   }
 
-  // Créer un board par défaut avec les 4 colonnes standards
+  /**
+   * Create a default board with 4 standard Kanban columns.
+   * Called automatically when the authenticated user has no boards yet.
+   */
   private async createDefaultBoard(): Promise<void> {
     try {
-      console.log('📝 Création du board par défaut "Board"...');
+      console.log('Creating default board...');
 
       // 1. Créer le board
       const boardData = {
@@ -270,7 +287,7 @@ export class Header implements OnInit, OnDestroy {
         this.entityService.addData('boards', boardData)
       );
 
-      console.log('✅ Board par défaut créé:', createdBoard);
+      console.log('Default board created:', createdBoard);
 
       const boardId = createdBoard.id;
 
@@ -293,26 +310,32 @@ export class Header implements OnInit, OnDestroy {
         );
       }
 
-      console.log('✅ Colonnes par défaut créées');
+      console.log('Default columns created');
 
       // 3. Recharger les boards pour afficher le board créé
       await this.loadBoards();
 
     } catch (error) {
-      console.error('❌ Erreur lors de la création du board par défaut:', error);
+      console.error('Error creating default board:', error);
     }
   }
 
-  // Login status management
+  /**
+   * Set up all RxJS subscriptions for auth state changes.
+   * Loads boards on connect, clears state on disconnect.
+   *
+   * PROTECTED: disconnect$ guard `if (msg !== true) return` is mandatory
+   * to prevent the BehaviorSubject initial false value from disconnecting the header.
+   */
   private setupSubscriptions(): void {
-    console.log('🎯 Header setupSubscriptions - État initial:', { isConnected: this.isConnected });
+    console.log('Header setupSubscriptions - initial state:', { isConnected: this.isConnected });
 
     this.message.connected$
       .pipe(takeUntil(this.destroy$))
       .subscribe(isConnected => {
         const wasDisconnected = !this.isConnected;
 
-        console.log('📨 Header reçoit connected$:', {
+        console.log('Header received connected$:', {
           isConnected,
           wasDisconnected,
           currentIsConnected: this.isConnected,
@@ -321,9 +344,9 @@ export class Header implements OnInit, OnDestroy {
 
         this.isConnected = isConnected;
 
-        // ✅ Si l'utilisateur vient de se connecter, charger les boards
+        // If the user just connected, load boards
         if (isConnected && wasDisconnected) {
-          console.log('✅ Utilisateur connecté - Chargement des boards...');
+          console.log('User connected - loading boards...');
           this.loadBoards();
           this.initializeOwnerInfo();
         }
@@ -335,7 +358,7 @@ export class Header implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((msg: boolean) => {
         if (msg !== true) return;
-        console.log('🚪 Header reçoit disconnect$');
+        console.log('Header received disconnect$');
         this.isConnected = false;
         this.boards = [];
         this.ownerName = '';
@@ -344,15 +367,16 @@ export class Header implements OnInit, OnDestroy {
       });
   }
 
-  // Close all open dropdowns
+  /** Emit a global close-all-dropdowns event to the rest of the app */
   handlecloseAllOpenDropdown(){
     this.isCloseDropdown = true
     this.message.messageBooleanCloseAll(this.isCloseDropdown)
   }
 
 
- handleEditProfile(): void {
-  console.log('✏️ Edit Profile clicked');
+  /** Open the profile editing modal pre-filled with the current user data */
+  handleEditProfile(): void {
+  console.log('Edit Profile clicked');
 
   // Récupérer les données actuelles
   const userData = this.tokenService.getUserData();
@@ -366,12 +390,17 @@ export class Header implements OnInit, OnDestroy {
   this.cdr.detectChanges();
 }
 
-handleCloseEditProfile(): void {
+  /** Close the profile editing modal */
+  handleCloseEditProfile(): void {
   this.isEditProfileOpen = false;
   this.cdr.detectChanges();
 }
 
-async handleUpdateProfile(): Promise<void> {
+  /**
+   * Validate and submit the profile update form.
+   * Updates TokenService in memory and emits a profileUpdated event.
+   */
+  async handleUpdateProfile(): Promise<void> {
   if (!this.editedUsername?.trim()) {
     alert('Username cannot be empty');
     return;
@@ -412,7 +441,7 @@ async handleUpdateProfile(): Promise<void> {
     this.ownerName = this.editedUsername.trim();
     this.ownerInitials = this.ownerName.substring(0, 2).toUpperCase();
 
-    // ✅ Notifier AVANT de vider les champs
+    // Notify before clearing fields
     this.message.messageProfileUpdated({
       username: this.editedUsername.trim(),
       email: this.editedEmail.trim()

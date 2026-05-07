@@ -12,9 +12,13 @@ export class AuthService {
 
   constructor(
     private readonly http: HttpClient,
-    private readonly tokenService: TokenService  // 🔐 Inject TokenService
+    private readonly tokenService: TokenService  // Inject TokenService
   ) { }
 
+  /**
+   * Guard: throw an error if the user is not currently authenticated
+   * Called before any secured HTTP request to fail fast
+   */
   private ensureAuthenticated(): void {
     const accessToken = this.tokenService.getAccessToken();
     const userId = this.tokenService.getUserId();
@@ -24,25 +28,30 @@ export class AuthService {
     }
   }
 
+  /**
+   * Attempt to restore an existing session at app startup
+   * If the access token is already in memory, returns true immediately.
+   * Otherwise performs a /auth/refresh call using the httpOnly cookie.
+   * @returns Observable<boolean> — true if a valid session was restored
+   */
   restoreSession(): Observable<boolean> {
     const hasUserId = !!this.tokenService.getUserId();
     const hasToken = this.tokenService.isAuthenticated();
 
-    // ✅ Si les deux existent déjà, session déjà active
+    // If both already exist, session is already active
     if (hasToken && hasUserId) {
-      console.log('✅ Session déjà active (token + userId en mémoire)');
+      console.log('Session already active (token + userId in memory)');
       return of(true);
     }
 
-    // ✅ NOUVELLE LOGIQUE: Essayer TOUJOURS le refresh, même sans userId
-    // Le cookie httpOnly peut exister même si localStorage est vide
-    console.log('🔄 Tentative de restauration via refresh token (cookie httpOnly)...');
+    // Try to refresh regardless - the httpOnly cookie may exist even if localStorage is empty
+    console.log('Attempting session restore via refresh token (httpOnly cookie)...');
 
     return this.refreshAccessToken().pipe(
       tap(response => {
-        console.log('✅ Refresh réussi - Restauration des données utilisateur');
+        console.log('Refresh successful - restoring user data');
 
-        // ✅ Sauvegarder l'accessToken ET les données utilisateur
+        // Save the accessToken and user data
         this.tokenService.setAccessToken(response.accessToken);
 
         if (response.userId && response.username && response.email && response.role) {
@@ -59,7 +68,7 @@ export class AuthService {
       }),
       map(() => true),
       catchError((error) => {
-        console.warn('⚠️ Impossible de restaurer la session (cookie invalide/expiré ou réseau)');
+        console.warn('Cannot restore session (invalid/expired cookie or network error)');
         console.error('Détails:', error);
         this.tokenService.clearAll();
         return of(false);
@@ -67,7 +76,11 @@ export class AuthService {
     );
   }
 
-  // Endpoint pour rafraîchir le token
+  /**
+   * Call POST /auth/refresh to get a new access token using the httpOnly cookie.
+   * The refresh token is never read or stored in JS — the browser sends it automatically.
+   * @returns Observable of the auth response containing the new accessToken and user info
+   */
   refreshAccessToken(): Observable<{
     accessToken: string;
     refreshToken: string | null;
@@ -77,11 +90,11 @@ export class AuthService {
     role: string;
     tokenType: string;
   }> {
-    // ℹ️ Le refreshToken est maintenant dans un httpOnly cookie
-    // Il sera envoyé automatiquement par le navigateur avec withCredentials: true
+    // The refreshToken is now in an httpOnly cookie
+    // It will be sent automatically by the browser with withCredentials: true
 
-    console.log('🔄 Appel de l\'endpoint /auth/refresh...');
-    console.log('🍪 Le refreshToken sera envoyé automatiquement via cookie httpOnly');
+    console.log('Calling /auth/refresh endpoint...');
+    console.log('The refreshToken will be sent automatically via httpOnly cookie');
 
     return this.http.post<{
       accessToken: string;
@@ -93,31 +106,31 @@ export class AuthService {
       tokenType: string;
     }>(
       `${this.apiUrl}/auth/refresh`,
-      {},  // ✅ Body vide, le token est dans le cookie
-      { withCredentials: true }  // ✅ Envoyer les cookies httpOnly
+      {},  // Empty body, the token is in the cookie
+      { withCredentials: true }  // Send httpOnly cookies
     ).pipe(
       map(response => {
-        console.log('✅ Réponse 200 OK du refresh reçue');
-        console.log('📦 Réponse du refresh:', {
+        console.log('200 OK response from refresh received');
+        console.log('Refresh response:', {
           hasAccessToken: !!response.accessToken,
           accessTokenPreview: response.accessToken?.substring(0, 20) + '...',
           userId: response.userId,
           username: response.username
         });
 
-        // ℹ️ Note: Les tokens sont sauvegardés par l'intercepteur
+        // Note: Tokens are saved by the interceptor
         return response;
       }),
       catchError((err: any) => {
-        console.error('❌ ÉCHEC de l\'appel /auth/refresh');
+        console.error('FAILED /auth/refresh call');
         console.error('Status:', err.status);
         console.error('Message:', err.message);
         console.error('Body:', err.error);
 
         // Si refresh échoue (401), nettoyer et déconnecter
         if (err.status === 401) {
-          console.warn('🚪 Refresh token invalide - Nettoyage des tokens');
-          this.tokenService.clearAll();  // 🔐 Clear from memory
+          console.warn('Invalid refresh token - clearing tokens');
+          this.tokenService.clearAll();  // Clear from memory
         }
 
         return throwError(() => err);
@@ -125,76 +138,126 @@ export class AuthService {
     );
   }
 
-  // ========== ENDPOINTS PUBLICS (without Auth) ==========
+  // ─── Public endpoints (no auth required) ────────────────────────────────────────────
+
+  /**
+   * Register a new user — calls a public endpoint, no token needed
+   * @param entity - API path (e.g. 'auth/register')
+   * @param data - registration payload
+   */
   addUser<T>(entity: string, data: T): Observable<T> {
     return this.http.post<T>(`${this.apiUrl}/${entity}`, data, {
-      withCredentials: true  // ✅ Envoyer cookies pour register
+      withCredentials: true  // Send cookies on registration
     });
   }
 
+  /**
+   * Log in with email + password — calls a public endpoint
+   * The response sets the httpOnly refresh-token cookie
+   * @param entity - API path (e.g. 'auth/login')
+   * @param data - credentials payload
+   */
   getUserByEmailAndPassword(entity: string, data: { email: string; password: string }): Observable<any> {
     return this.http.post(`${this.apiUrl}/${entity}`, data, {
-      withCredentials: true  // ✅ Envoyer cookies pour login
+      withCredentials: true  // Required so the backend can set the httpOnly cookie
     });
   }
 
-  // ========== ENDPOINTS AUTHENTIFIÉS ==========
+  // ─── Authenticated endpoints ──────────────────────────────────────────────────
+
+  /**
+   * GET all resources — requires a valid access token
+   * @param entity - API resource name
+   */
   get<T>(entity: string): Observable<T> {
     this.ensureAuthenticated();
     return this.http.get<T>(`${this.apiUrl}/${entity}`);
   }
 
-  // GET user by id authentification
+  /**
+   * GET a single user by ID — fetches the full list then filters client-side
+   * @param entity - API resource name
+   * @param id - optional user ID to filter by
+   */
   getUserById<T extends { id?: string }>(entity: string, id?: string): Observable<T[]> {
     this.ensureAuthenticated();
     return this.http.get<T[]>(`${this.apiUrl}/${entity}`).pipe(
       map(items => {
         if (!id) return items;
+        // Return only the item whose id matches
         return Array.isArray(items) ? items.filter(item => item.id === id) : [];
       })
     );
   }
 
-  // POST authentification
+  /**
+   * POST to a secured endpoint
+   * @param entity - API resource name
+   * @param data - request body
+   */
   post<T>(entity: string, data: any): Observable<T> {
     this.ensureAuthenticated();
     return this.http.post<T>(`${this.apiUrl}/${entity}`, data);
   }
 
-  // PUT authentification
+  /**
+   * PUT to a secured endpoint (full replacement)
+   * @param entity - API resource name
+   * @param data - request body
+   */
   put<T>(entity: string, data: any): Observable<T> {
     this.ensureAuthenticated();
     return this.http.put<T>(`${this.apiUrl}/${entity}`, data);
   }
 
-  // PATCH authentification
+  /**
+   * PATCH to a secured endpoint (partial update)
+   * @param entity - API resource name
+   * @param id - resource ID to patch
+   * @param data - partial payload
+   */
   patchData<T>(entity: string, id: string, data: Partial<T>): Observable<T> {
     return this.http.patch<T>(`${this.apiUrl}/${entity}/${id}`, data);
   }
 
-  // DELETE authentification
+  /**
+   * DELETE a secured resource
+   * @param entity - API resource name
+   * @param id - optional resource ID; omit to delete the whole collection endpoint
+   */
   delete<T>(entity: string, id?: string): Observable<T> {
     this.ensureAuthenticated();
+    // Build the URL with or without an ID segment
     const url = id ? `${this.apiUrl}/${entity}/${id}` : `${this.apiUrl}/${entity}`;
     return this.http.delete<T>(url);
   }
 
-  // GET by ID authentification
+  /**
+   * GET a single resource by ID — wraps it in an array for consistent typing
+   * @param entity - API resource name
+   * @param id - optional resource ID
+   */
   getDataById<T>(entity: string, id?: string): Observable<T[]> {
     this.ensureAuthenticated();
     if (!id) return of([]);
+    // Wrap the single response object in an array
     return this.http.get<T>(`${this.apiUrl}/${entity}/${id}`).pipe(
       map(item => item ? [item] : [])
     );
   }
 
-  // SEARCH authentification
+  /**
+   * Search resources by name (client-side filtering)
+   * @param entity - API resource name
+   * @param query - search string matched against item.name
+   */
   searchData<T extends {name: string}>(entity: string, query: string): Observable<T[]> {
     this.ensureAuthenticated();
     return this.http.get<T[]>(`${this.apiUrl}/${entity}`).pipe(
       map(items => {
         if (!Array.isArray(items)) return [];
         const normalizedQuery = query.toLowerCase();
+        // Case-insensitive substring match on the name field
         return items.filter(item => item.name.toLowerCase().includes(normalizedQuery));
       })
     );

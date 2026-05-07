@@ -9,7 +9,7 @@ import { Message } from '../../services/message';
 
 interface AuthResponse {
   accessToken: string;
-  refreshToken: string | null;  // ✅ Peut être null (dans cookie maintenant)
+  refreshToken: string | null;  // Can be null (stored in httpOnly cookie)
   tokenType: string;
   userId: string;
   email: string;
@@ -47,7 +47,16 @@ export class SignIn {
     })
   }
 
-  // Method to handle form submission
+  /**
+   * Handle sign-in form submission.
+   * On success: stores the access token in memory (never localStorage) and emits messageConnected.
+   * On failure: displays a localized error message.
+   *
+   * PROTECTED:
+   * - No Validators.minLength() on password (would silently block submission)
+   * - cdr.detectChanges() in catch is mandatory for async error display
+   * - error.status === 0 handles CORS / server unreachable
+   */
   async handleSignInSubmit(event: any){
     event?.preventDefault()
     this.form.markAllAsTouched()
@@ -66,10 +75,10 @@ export class SignIn {
 
         console.log(authData);
 
-        // 🔐 SÉCURITÉ: Stocker UNIQUEMENT l'accessToken en MÉMOIRE
+        // SECURITY: Store ONLY the accessToken in MEMORY
         this.tokenService.setAccessToken(authData.accessToken);
 
-        // 💾 Stocker les données utilisateur (non sensibles)
+        // Store user data (non-sensitive)
         this.tokenService.setUserData({
           userId: authData.userId,
           username: authData.username || authData.email.split('@')[0],
@@ -80,10 +89,10 @@ export class SignIn {
         localStorage.setItem('connected', 'true');
         localStorage.setItem('isAuthenticated', 'true');
 
-        console.log('✅ Connexion réussie - Tokens sécurisés');
-        console.log('🔐 AccessToken stocké en MÉMOIRE');
-        console.log('🍪 RefreshToken stocké en httpOnly cookie (inaccessible en JS)');
-        console.log('📦 User data:', {
+        console.log('Login successful - Tokens secured');
+        console.log('AccessToken stored in memory');
+        console.log('RefreshToken stored in httpOnly cookie (not accessible in JS)');
+        console.log('User data:', {
           userId: authData.userId,
           username: authData.username,
           email: authData.email,
@@ -93,8 +102,8 @@ export class SignIn {
         // Emit events to update application state
         this.message.messageConnected(true);
 
-        // ✅ NE PLUS RECHARGER LA PAGE - laisser Angular gérer l'état
-        // L'observable connected$ va déclencher la mise à jour de l'UI
+        // Do not reload the page - let Angular handle state update
+        // The connected$ observable will trigger the UI update
 
       } else {
         this.errorMessage = 'Email ou mot de passe incorrect.';
@@ -117,7 +126,7 @@ export class SignIn {
 
   }
 
-  // Method to handle sign-up redirect
+  /** Close the sign-in panel and open the sign-up panel */
   handleSignUpRedirect() {
     this.isSignIn = false;
     this.closeSignIn_OpenSignUp.emit(this.isSignIn);

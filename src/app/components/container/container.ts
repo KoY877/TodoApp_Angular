@@ -46,10 +46,15 @@ export class Container implements OnInit {
     private cdr: ChangeDetectorRef
   ){ }
 
+  /**
+   * Initialize all RxJS subscriptions (sign-in/sign-up state, auth state,
+   * board selection, modal, profile updates).
+   * Checks the current auth state and shows sign-in if not authenticated.
+   */
   async ngOnInit(): Promise<void> {
 
-    // ✅ SOUSCRIRE AUX OBSERVABLES
-    // L'initialisateur d'app a déjà restauré la session si possible
+    // Subscribes to all observables
+    // The app initializer has already restored the session if possible
 
     this.message.signIn$.pipe(takeUntil(this.destroy$)).subscribe((msg: boolean) => {
       this.sign_in = msg;
@@ -99,7 +104,7 @@ export class Container implements OnInit {
         const board = Array.isArray(boardData) ? boardData[0] : boardData;
         this.clickedBoard = { ...board };
         this.openBoard = true;
-        // ✅ Sauvegarder uniquement l'ID du board
+        // Save only the board ID
         if (board.id) {
           localStorage.setItem('lastViewedBoardId', board.id);
         }
@@ -114,21 +119,26 @@ export class Container implements OnInit {
       this.cdr.detectChanges();
     });
 
-    // ✅ Initialiser l'état basé sur l'authentification actuelle
-    // (déjà restaurée par l'APP_INITIALIZER si possible)
+    // Initialize auth state based on current session
+    // (already restored by APP_INITIALIZER if possible)
     const isAuth = this.tokenService.isAuthenticated();
 
     if (isAuth) {
-      console.log('✅ Container: Utilisateur authentifié détecté');
+      console.log('Container: authenticated user detected');
       // Le messageConnected(true) a déjà été appelé par l'initializer
     } else {
-      console.log('ℹ️ Container: Aucune authentification - Affichage du login');
+      console.log('Container: no authentication - showing login');
       this.showSignIn();
     }
 
     this.cdr.detectChanges();
   }
 
+  /**
+   * React to @Input changes:
+   * - isCloseAllDropdown: forward close event to child components
+   * - UserName: flag that the email value has changed
+   */
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['isCloseAllDropdown']?.currentValue !== undefined) {
       this.closeAllOpenDropdown.emit(); // pour les enfants directs si tu veux
@@ -139,18 +149,22 @@ export class Container implements OnInit {
     }
   }
 
+  /** Lifecycle hook — complete the destroy$ subject to unsubscribe all pipes */
   ngOnDestroy(): void {
     // Unsubscribe to avoid memory leaks
     this.destroy$.next();
     this.destroy$.complete();
   }
 
-  // Méthodes pour gérer les dropdowns et modals
+  /**
+   * Track the open/close state of any child dropdown
+   * @param isOpen - true if at least one dropdown is open
+   */
   onDropdownStateChange(isOpen: boolean) {
     this.isAnyDropdownOpen = isOpen;
   }
 
-  // Method to handle Open Sign Up
+  /** Show the sign-up panel and hide the sign-in panel */
   handleOpenSignUp(){
     this.sign_in = false;
     this.sign_up = true;
@@ -158,17 +172,22 @@ export class Container implements OnInit {
     this.message.messageSignUp(true);
   }
 
-  // Method to handle Open Sign In
+  /** Show the sign-in panel */
   handleOpenSignIn(){
     this.showSignIn();
   }
 
+  /**
+   * Called when the sign-up panel closes itself.
+   * @param isOpen - false means the panel is closing → redirect to sign-in
+   */
   handleCloseSignUp(isOpen: boolean){
     if (!isOpen) {
       this.showSignIn();
     }
   }
 
+  /** Close the board creation modal and restore the board view */
   handleCloseModal(){
     this.openModalCreateBoard = false;
     this.openBoard = true;
@@ -176,7 +195,10 @@ export class Container implements OnInit {
     this.cdr.detectChanges();
   }
 
-  // Method to close all simple dropdowns
+  /**
+   * Close all open member dropdowns
+   * @param closeAll - true to force-close all dropdowns
+   */
   handleCloseAllDropdown(closeAll: boolean | undefined){
     if (closeAll=== true) {
       for (let i = 0; i < this.memberDropdown.length; i++) {
@@ -187,11 +209,15 @@ export class Container implements OnInit {
     }
   }
 
-  // Method to handle Close Dropdown
+  /** Reset the close-all-dropdown flag after children have processed it */
   handleClosedDropdown(){
     this.isCloseAllDropdown = false
   }
 
+  /**
+   * Show the sign-in panel and reset the auth state.
+   * Emits messageConnected(false) to notify all subscribers.
+   */
   private showSignIn(): void {
     this.isConnected = false;
     this.sign_in = true;
@@ -202,6 +228,7 @@ export class Container implements OnInit {
     this.message.messageSignUp(false);
   }
 
+  /** Called when the active board is deleted: reset board view and refresh the board list */
   handleBoardDeleted(): void {
     // Fermer le board et retourner à l'état initial
     this.openBoard = false;

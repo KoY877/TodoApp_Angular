@@ -3,28 +3,28 @@ import { BehaviorSubject, lastValueFrom, Observable } from 'rxjs';
 import { AuthService } from './auth-service';
 
 /**
- * 🔐 TokenService - Stockage SÉCURISÉ des tokens JWT
+ * TokenService - Secure storage for JWT tokens
  *
- * SÉCURITÉ:
- * - accessToken → Mémoire (JavaScript) - Perdu au rafraîchissement de page
- * - refreshToken → httpOnly cookie (Backend) - Inaccessible en JavaScript
+ * SECURITY:
+ * - accessToken: JavaScript memory (lost on page refresh)
+ * - refreshToken: httpOnly cookie (backend) - inaccessible in JavaScript
  *
- * PROTECTION CONTRE XSS:
- * ✅ Le refreshToken ne peut pas être volé par un script malveillant
- * ✅ L'accessToken est en mémoire, perdu si la page est fermée
+ * XSS PROTECTION:
+ * The refreshToken cannot be stolen by a malicious script
+ * The accessToken is in memory and is lost when the page is closed
  */
 @Injectable({
   providedIn: 'root',
 })
 export class TokenService {
-  // 🔒 Token stocké EN MÉMOIRE (non persistant)
+  // Token stored IN MEMORY (non-persistent)
   private accessToken: string | null = null;
 
-  // 📊 Observable pour notifier les changements d'authentification
+  // Observable to notify authentication state changes
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
   public isAuthenticated$: Observable<boolean> = this.isAuthenticatedSubject.asObservable();
 
-  // 👤 Données utilisateur en mémoire
+  // User data in memory
   private userData: {
     userId?: string;
     username?: string;
@@ -35,43 +35,43 @@ export class TokenService {
   constructor() {
     // Au démarrage, vérifier si on a déjà un token en mémoire
     // (sera null après refresh de page → nécessite re-login ou refresh token)
-    console.log('🔧 TokenService initialized - Tokens in memory only');
+    console.log('TokenService initialized - Tokens in memory only');
   }
 
   /**
-   * 💾 Sauvegarder l'access token EN MÉMOIRE
+   * Save the access token IN MEMORY
    */
   setAccessToken(token: string): void {
     this.accessToken = token;
     this.isAuthenticatedSubject.next(true);
-    console.log('✅ Access token stored in memory');
+    console.log('Access token stored in memory');
   }
 
   /**
-   * 📖 Récupérer l'access token depuis la mémoire
+   * Retrieve the access token from memory
    */
   getAccessToken(): string | null {
     return this.accessToken;
   }
 
   /**
-   * 🗑️ Supprimer l'access token de la mémoire
+   * Remove the access token from memory
    */
   clearAccessToken(): void {
     this.accessToken = null;
     this.isAuthenticatedSubject.next(false);
-    console.log('🗑️ Access token cleared from memory');
+    console.log('Access token cleared from memory');
   }
 
   /**
-   * ✅ Vérifier si l'utilisateur est authentifié
+   * Check if the user is authenticated
    */
   isAuthenticated(): boolean {
     return this.accessToken !== null;
   }
 
   /**
-   * 💾 Sauvegarder les données utilisateur
+   * Save user data
    */
   setUserData(data: { userId: string; username: string; email: string; role: string }): void {
     this.userData = data;
@@ -83,28 +83,28 @@ export class TokenService {
   }
 
   /**
-   * 📖 Récupérer les données utilisateur
+   * Retrieve user data
    */
   getUserData(): typeof this.userData {
     return this.userData;
   }
 
   /**
-   * 📖 Récupérer l'ID utilisateur
+   * Retrieve the user ID
    */
   getUserId(): string | null {
     return this.userData?.userId || localStorage.getItem('User-Id');
   }
 
   /**
-   * 🗑️ Nettoyer toutes les données (logout)
+   * Clear all data (logout)
    */
   clearAll(): void {
     this.accessToken = null;
     this.userData = null;
     this.isAuthenticatedSubject.next(false);
 
-    // Nettoyer localStorage (données non sensibles)
+    // Clear non-sensitive localStorage data
     localStorage.removeItem('User-Id');
     localStorage.removeItem('UserName');
     localStorage.removeItem('UserEmail');
@@ -112,14 +112,14 @@ export class TokenService {
     localStorage.removeItem('connected');
     localStorage.removeItem('isAuthenticated');
 
-    console.log('🗑️ All tokens and user data cleared');
+    console.log('All tokens and user data cleared');
   }
 
   // Dans token.service.ts
 
   /**
-   * 🔄 Tenter de restaurer la session au démarrage
-   * Utilise le refreshToken dans le cookie httpOnly
+   * Attempt to restore the session at startup.
+   * Uses the refreshToken from the httpOnly cookie.
    */
   async tryRestoreSession(): Promise<boolean> {
     // Si on a déjà un token en mémoire, pas besoin de refresh
@@ -140,10 +140,10 @@ export class TokenService {
       );
 
       this.setAccessToken(response.accessToken);
-      console.log('✅ Session restaurée automatiquement après reload');
+      console.log('Session restored automatically after reload');
       return true;
     } catch (error) {
-      console.log('❌ Impossible de restaurer la session - Refresh token expiré');
+      console.log('Cannot restore session - refresh token expired');
       this.clearAll();
       return false;
     }

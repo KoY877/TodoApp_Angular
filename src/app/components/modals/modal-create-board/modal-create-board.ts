@@ -262,6 +262,8 @@ export class ModalCreateBoard {
 
     })
 
+    this.setInitialSelection();
+
     // Next step
     this.nextStep();
   }
@@ -308,6 +310,8 @@ export class ModalCreateBoard {
     this.isDone = false;
     this.isDoneDeleted = false;
 
+    this.setInitialSelection();
+
     // Previous step
     this.prevStep();
   }
@@ -319,15 +323,32 @@ export class ModalCreateBoard {
 
 
   setInitialSelection(): void {
+    // Trouver le dernier index de added_columns qui a une valeur pour columnName
     const lastWithValueIndex = this.added_columns.controls
       .map((control, index) => ({ control, index }))
       .filter(({ control }) => control.get('columnName')?.value) // Filtrer les champs avec des valeurs
       .map(({ index }) => index)
       .pop(); // Récupérer le dernier index avec une valeur
 
-    if (lastWithValueIndex !== undefined) {
+    // Trouver l´index de la colonne "Done" dans added_columns
+    const doneColumnIndex = this.added_columns.controls
+      .map((control, index) => ({ control, index }))
+      .find(({ control }) => control.get('columnName')?.value === 'Done')?.index;
+
+
+    // Si un index valide est trouvé, définir la valeur par défaut
+    if (doneColumnIndex !== undefined) {
+      this.form.get('selectedTask')?.setValue('Done'); // Affecter "Done" comme valeur par défaut
+    } else if (lastWithValueIndex !== undefined) {
       const initialTask = this.added_columns.at(lastWithValueIndex).get('columnName')?.value;
       this.form.get('selectedTask')?.setValue(initialTask); // Affecter la valeur par défaut
+    }
+
+    // Global option : "Add a Done column for me" si la colonne "Done" n´existe pas, sinon "No, I will add a Done column by myself"
+    if (doneColumnIndex === undefined) {
+      this.form.get('globalOption')?.setValue('Add a Done column for me');
+    } else {
+      this.form.get('globalOption')?.setValue('finished task in ');
     }
   }
 
@@ -427,6 +448,8 @@ export class ModalCreateBoard {
       });
     }
 
+    this.setInitialSelection();
+
     this.prevStep();
   }
 
@@ -504,17 +527,17 @@ export class ModalCreateBoard {
       const boardData = {
         name: this.form.value.name.trim(),
         description: this.form.value.description || ''
-        // ✅ Pas de userId - extrait du JWT côté backend
+        // No userId - extracted from JWT on the backend side
       };
 
-      console.log('📤 Creating board:', boardData);
+      console.log('Creating board:', boardData);
 
       // 1. Create the board
       const response: any = await lastValueFrom(
         this.entityService.addData('boards', boardData)
       );
 
-      console.log('✅ Board created successfully:', response);
+      console.log('Board created successfully:', response);
       this.responsData = response;
 
       const boardId: string = response.id;
@@ -547,7 +570,7 @@ export class ModalCreateBoard {
               })
             );
           } catch (memberError: any) {
-            console.warn(`⚠️ Could not add member ${m.memberEmail}:`, memberError);
+            console.warn(`Could not add member ${m.memberEmail}:`, memberError);
             failedMembers.push(m.memberEmail.trim());
           }
         }
@@ -565,14 +588,9 @@ export class ModalCreateBoard {
         alert(`Board created successfully!\n\nThe following email(s) could not be added as members (not registered):\n${failedMembers.join('\n')}`);
       }
 
-      // Reload to show the new board
-      setTimeout(() => {
-        this.reload.reloadPage();
-      }, 300);
-
     } catch (error: any) {
-      console.error('❌ Error creating board:', error);
-      
+      console.error('Error creating board:', error);
+
       // Handle specific error cases
       if (error.status === 401) {
         this.errorMessage = 'Authentication required. Please sign in again.';
@@ -582,7 +600,7 @@ export class ModalCreateBoard {
         this.errorMessage = 'You do not have permission to create a board.';
       } else if (error.status === 0) {
         // Network error - board might have been created
-        console.warn('⚠️ Network error (status 0) - checking if board was created...');
+        console.warn('Network error (status 0) - checking if board was created...');
         this.closeModal.emit();
         setTimeout(() => {
           this.reload.reloadPage();
@@ -591,7 +609,7 @@ export class ModalCreateBoard {
       } else {
         this.errorMessage = error.error?.message || 'An error occurred while creating the board. Please try again.';
       }
-      
+
       alert(this.errorMessage);
     }
   }

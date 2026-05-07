@@ -129,14 +129,16 @@ export class Board {
    * @param changes
    */
   ngOnChanges(changes: SimpleChanges): void {
+    // When isCloseAllDropdown changes, handle closing all dropdowns
     if (changes['isCloseAllDropdown'] && changes['isCloseAllDropdown'].currentValue) {
       this.handleCloseAllDropdown(this.getisCloseDropdown());
     }
 
+    // When clickedBoard changes, reinitialize dropdowns and reload members
     if (changes['clickedBoard']?.currentValue) {
       this.initializeDropdowns();
       this.memberEmails = this.clickedBoard?.members;
-      console.log('👥 memberEmails set to:', this.memberEmails);  // ← Ajouter ce log
+      console.log('memberEmails set to:', this.memberEmails);  // log for debug
 
       if (this.clickedBoard?.id) {
         this.boardId = this.clickedBoard.id;
@@ -146,21 +148,33 @@ export class Board {
 
   }
 
+  /** Lifecycle hook to clean up subscriptions on component destroy */
   ngOnDestroy(): void {
+    // Emit to complete all takeUntil subscriptions
     this.destroy$.next();
     this.destroy$.complete();
   }
 
-  // Method to handle member search input changes
+  /**
+   * Handle member search input changes
+   * @param value - true if a complete email has been entered
+   */
   onIsCompleteEmailChange(value: boolean) {
     this.isCompleteEmail = value;
   }
 
+  /**
+   * Get the current close-all-dropdown state
+   * @returns true if all dropdowns should be closed
+   */
   getisCloseDropdown(): boolean {
     return this.isCloseAllDropdown;
   }
 
-
+  /**
+   * Listen to document click events to close dropdowns when clicking outside
+   * @param event - the mouse click event
+   */
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
     const target = event.target as HTMLElement;
@@ -170,7 +184,7 @@ export class Board {
       return;
     }
 
-    // Verfiry if the click is inside the component
+    // Verify if the click is inside the component
     const clickedInside = this.elementRef.nativeElement.contains(target);
 
     // If the click is outside, close all simple dropdowns
@@ -182,6 +196,10 @@ export class Board {
     this.cdr.detectChanges();
   }
 
+  /**
+   *
+   * @param closeAll
+   */
   handleCloseAllDropdown(closeAll: boolean | undefined) {
     if (closeAll === true) {
       this.isOpenDropdown = this.isOpenDropdown.map(dropdown => ({
@@ -189,7 +207,7 @@ export class Board {
         isDropdown: false
       }));
 
-      // Fermer le dropdown d'édition du board
+      // Close the board name edit dropdown
       this.isEditingBoardName = false;
       this.editedBoardName = '';
 
@@ -198,7 +216,11 @@ export class Board {
     }
   }
 
-  // Method to handle opening a dropdown based on its name
+  /**
+   * Handle opening a dropdown based on its name
+   * @param dropdownName
+   * @returns
+   */
   handleOpenDropdown(dropdownName: string | undefined): void {
     if (!dropdownName) return;
 
@@ -209,7 +231,9 @@ export class Board {
       return;
     }
 
+    // Use
     setTimeout(() => {
+      // Toggle the clicked dropdown and close others (except search if it's open)
       this.isOpenDropdown = this.isOpenDropdown.map(dropdown => ({
         ...dropdown,
         isDropdown: dropdown.name === dropdownName ||
@@ -227,12 +251,19 @@ export class Board {
     }, 0);
   }
 
+  /**
+   * Handle closing the edit board name dropdown
+   */
   handleCloseEditBoardName(): void {
     this.isEditingBoardName = false;
     this.editedBoardName = '';
     this.cdr.detectChanges();
   }
 
+  /**
+   *  Handle updating the board name
+   * @returns
+   */
   async handleUpdateBoardName(): Promise<void> {
     if (!this.editedBoardName?.trim()) {
       alert('Board name cannot be empty');
@@ -267,7 +298,10 @@ export class Board {
     }
   }
 
-  // Handle close dropdown when clicking outside or on another dropdown
+  /**
+   * Handle close dropdown when clicking outside or on another dropdown
+   * @param identifier - string to close a specific dropdown, false to close all
+   */
   handleCloseDropdown(identifier: string | boolean | undefined): void {
     if (identifier === undefined) return;
 
@@ -288,10 +322,15 @@ export class Board {
       return dropdown;
     });
 
+    // Reset alert state after closing
     this.isAlert = false;
   }
 
 
+  /**
+   * Show an alert when user clicks outside while a dropdown is still open
+   * @param hasOpenDropdown - true if a dropdown was open before the click
+   */
   alertOnClickOutside(hasOpenDropdown: boolean): void {
     const hasAnyOpen = this.isOpenDropdown.some(dropdown => dropdown.isDropdown);
 
@@ -304,18 +343,27 @@ export class Board {
     }
   }
 
+  /** Cancel the current alert and hide it */
   handleCancel(): void {
     this.isAlert = false;
   }
 
-  // Private methods
+  // ─── Private methods ─────────────────────────────────────────────────────────
+
+  /**
+   * Initialize all base dropdowns to their default closed state
+   */
   private initializeDropdowns(): void {
+    // Map base dropdown names to DropdownState objects with isDropdown = false
     this.isOpenDropdown = this.baseDropdowns.map(name => ({
       name,
       isDropdown: false
     }));
   }
 
+  /**
+   * Initialize owner name, initials and ownership flag from localStorage
+   */
   private initializeOwnerInfo(): void {
     const currentUserId = localStorage.getItem('User-Id');
 
@@ -331,20 +379,23 @@ export class Board {
     }
   }
 
-  // load board members and assign random colors to each member
+  /**
+   * Load board members from the API and assign random colors to each member
+   * @param id - the board ID to load members for
+   */
   private async loadBoardMembers(id: string): Promise<void> {
     try {
-      console.log('🔍 Loading board data for ID:', id);
+      console.log('Loading board data for ID:', id);
       this.currentBoard = await lastValueFrom(
         this.entityService.getDataById<BoardModel>('boards', id)
       );
 
-      console.log('✅ Board data received:', this.currentBoard);
+      console.log('Board data received:', this.currentBoard);
 
       if (this.currentBoard?.[0]) {
         const board = this.currentBoard[0];
-        console.log('📊 Board columns count:', board.columns?.length || 0);
-        console.log('👥 Board members count:', board.members?.length || 0);
+        console.log('Board columns count:', board.columns?.length || 0);
+        console.log('Board members count:', board.members?.length || 0);
 
         setTimeout(() => {
           this.members = board.members;
@@ -359,13 +410,18 @@ export class Board {
       // Trigger change detection to update the view with new member data
       this.cdr.detectChanges();
     } catch (error) {
-      console.error('❌ Error loading board:', error);
+      console.error('Error loading board:', error);
       this.members = [];
       this.numberOfMember = 1;
     }
   }
 
+  /**
+   * Add a DropdownState entry for each board member
+   * so their individual action dropdowns can be toggled
+   */
   private addMemberDropdowns(): void {
+    // Build one dropdown per member using their email as identifier
     const memberDropdowns = this.members
       .filter(item => item.memberEmail)
       .map(item => ({
@@ -373,9 +429,13 @@ export class Board {
         isDropdown: false
       }));
 
+    // Append to the existing base dropdowns
     this.isOpenDropdown = [...this.isOpenDropdown, ...memberDropdowns];
   }
 
+  /**
+   * Close all currently open dropdowns in the component
+   */
   private closeSimpleDropdowns(): void {
     const simpleDropdownIndices: Array<number> = [];
 
@@ -401,10 +461,15 @@ export class Board {
     );
   }
 
+  /**
+   * Generate a random hex color string for member avatars
+   * @returns a hex color string such as '#A3F2C1'
+   */
   generateRandomColor(): string {
     const letters = '0123456789ABCDEF';
     let color = '#';
 
+    // Build a 6-character hex color
     for (let i = 0; i < 6; i++) {
       color += letters[Math.floor(Math.random() * 16)];
     }
@@ -412,17 +477,23 @@ export class Board {
     return color;
   }
 
+  /** Show the delete confirmation dialog */
   handleDeleteBoard(): void {
     this.isConfirmDelete = true;
     this.cdr.detectChanges();
   }
 
+  /**
+   * Confirm and execute board deletion via the API
+   * Notifies the parent component to close the board view on success
+   */
   handleConfirmDelete(): void {
     this.entityService.deleteData('boards', this.boardId).subscribe({
       next: () => {
+        // Reset UI state and notify parent to close the board
         this.isConfirmDelete = false;
         this.isEditingBoardName = false;
-        this.sendTaskData.emit(); // Notifie le parent de fermer le board
+        this.sendTaskData.emit();
         this.cdr.detectChanges();
       },
       error: (error) => {
@@ -433,6 +504,7 @@ export class Board {
     });
   }
 
+  /** Cancel the delete operation and hide the confirmation dialog */
   handleCancelDelete(): void {
     this.isConfirmDelete = false;
     this.cdr.detectChanges();
